@@ -9,7 +9,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeApplications #-}
 
-module Language.MFAG.Syntax.Set where
+module Language.MFAG.Syntax.Set.Base where
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
