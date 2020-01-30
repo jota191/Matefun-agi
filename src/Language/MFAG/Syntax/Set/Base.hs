@@ -39,10 +39,10 @@ type EnumConsts = S.Set T.Text {- TODO: is this a good choice? -}
 $(addProd "Enum" ''Nt_Set [("enum_c", Ter ''EnumConsts)])
 
 -- | Cartesian product non terminal
-$(addNont "Prod")
+$(addNont "Cart")
 
 -- | Cartesian product production
-$(addProd "Cart" ''Nt_Set [("cart_c", NonTer ''Nt_Prod)])
-$(addProd "Cart_Nil" ''Nt_Prod [("cart_nil_t", Ter ''())])
-$(addProd "Cart_Cons" ''Nt_Prod [("cart_hd_t", NonTer ''Nt_Set),
-                                 ("cart_tl_t", NonTer ''Nt_Prod)])
+$(addProd "Cart" ''Nt_Set [("cart_c", NonTer ''Nt_Cart)])
+$(addProd "Cart_Nil" ''Nt_Cart [("cart_nil_t", Ter ''())])
+$(addProd "Cart_Cons" ''Nt_Cart [("cart_hd_t", NonTer ''Nt_Set),
+                                 ("cart_tl_t", NonTer ''Nt_Cart)])
