@@ -22,7 +22,6 @@ type NVars = [NVar]
 -- | Function names
 type NFun  = String
 
-
 -- | Unary operators
 type UOp   = String
 

@@ -37,16 +37,25 @@ $(addProd "Sig" ''Nt_Sig [("dom", NonTer ''Set.Nt_Set),
 -- bureaucracy, I'll keep it simple. NVars is defined in Terminals.hs
 
 -- values
-$(addNont "Val")
-$(addProd "ValZ" ''Nt_Val [("valZ_t", Ter ''Integer)])
-$(addProd "ValR" ''Nt_Val [("valR_t", Ter ''Double)])
-$(addProd "ValC" ''Nt_Val [("valC_t", Ter ''Constructor)])
-$(addProd "ValC2" ''Nt_Val [("valC2_t", Ter ''Constructor)])
+
+data Val
+  = ValZ    Integer
+  | ValR    Double
+  | ValC    Constructor
+  | ValProd [Val]
+  | ValTupl [Val]
+  deriving (Show, Eq, Read)
+
+-- $(addNont "Val")
+-- $(addProd "ValZ" ''Nt_Val [("valZ_t", Ter ''Integer)])
+-- $(addProd "ValR" ''Nt_Val [("valR_t", Ter ''Double)])
+-- $(addProd "ValC" ''Nt_Val [("valC_t", Ter ''Constructor)])
+-- $(addProd "ValC2" ''Nt_Val [("valC2_t", Ter ''Constructor)])
 
 -- TODO: more values, for now we are ok
 $(addNont "Exp")
-$(addProd "Lit"   ''Nt_Exp [("lit_c",     NonTer ''Nt_Val)])
-$(addProd "Var"   ''Nt_Exp [("var_t",     Ter ''NVar)])
+$(addProd "Lit"   ''Nt_Exp [("lit_t",     Ter    ''Val)])
+$(addProd "Var"   ''Nt_Exp [("var_t",     Ter    ''NVar)])
 $(addProd "OpInf" ''Nt_Exp [("op_inf_l",  NonTer ''Nt_Exp),
                             ("op_inf_op", Ter    ''BOp),
                             ("op_inf_r",  NonTer ''Nt_Exp)])
@@ -70,6 +79,7 @@ $(addProd "ExpGOr" ''Nt_ExpG [("expGOr_e", NonTer ''Nt_Exp)])
 $(addNont "Ecu")
 $(addProd "Ecu" ''Nt_Ecu [("ecu_l", Ter ''NVars),
                           ("ecu_r", NonTer ''Nt_ExpG)])
+
 
 -- function definiitons
 $(addNont "FDef")
