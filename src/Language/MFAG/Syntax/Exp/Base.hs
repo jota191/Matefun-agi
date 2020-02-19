@@ -40,6 +40,8 @@ $(addProd "Sig" ''Nt_Sig [("dom", NonTer ''Set.Nt_Set),
 $(addNont "Val")
 $(addProd "ValZ" ''Nt_Val [("valZ_t", Ter ''Integer)])
 $(addProd "ValR" ''Nt_Val [("valR_t", Ter ''Double)])
+$(addProd "ValC" ''Nt_Val [("valC_t", Ter ''Constructor)])
+$(addProd "ValC2" ''Nt_Val [("valC2_t", Ter ''Constructor)])
 
 -- TODO: more values, for now we are ok
 $(addNont "Exp")

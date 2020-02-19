@@ -89,8 +89,10 @@ $(attLabels [("idVal", ''Val)])
 asp_idVal
   =   (syn idVal p_ValZ (ValZ <$> ter ch_valZ_t))
   .+: (syn idVal p_ValR (ValR <$> ter ch_valR_t))
+  .+: (syn idVal p_ValC (ValC <$> ter ch_valC_t))
+  .+: (syn idVal p_ValC2 (ValC <$> ter ch_valC2_t))
   .+: emptyAspect
--------------------------------------------------
+------------------------------------------------
 
 asp_eval_Exp
   =   (syn seval p_Lit   $ at ch_lit_c idVal)
@@ -110,6 +112,7 @@ asp_eval_Exp
 computeInf l op r
   = case op of
       "+" -> l + r -- recall: Val implements Num
+      "-" -> l - r
       _   -> error "operator not yet implemented"
 
 lala' = (asp_env_Exp .:+: asp_eval_Exp .:+: asp_idVal)
