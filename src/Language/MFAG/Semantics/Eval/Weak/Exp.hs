@@ -76,6 +76,11 @@ instance Fractional Val where
 -- examples
 e1 = Lit $ ValZ $ 32 
 
+
+$(attLabels [("idExp", ''Exp)])
+
+
+
 --  First, let us define a simple evaluation, partial since terms
 -- could be ill formed
 
@@ -120,7 +125,9 @@ asp_eval_Exp
                               e  <- at ch_op_pre_e seval
                               return $ computePre op e
       )
-  .+: (syn seval p_App   $ notImpl)
+  .+: (syn seval p_App   $ do nfun <- ter ch_app_f
+                              e    <- at ch_app_e idExp
+                              return undefined)
   .+: emptyAspect
 
 computeInf l op r
@@ -162,7 +169,7 @@ asp_gamma
 
 
 
-asp_Exp = (asp_eval_Exp .:+: asp_env_Exp .:+: asp_gamma)
+asp_Exp = (asp_eval_Exp .:+: asp_env_Exp .:+: asp_gamma .:+: asp_idExp)
 
 eval_Exp e
   = sem_Exp asp_Exp e initialAtt #. seval
@@ -194,11 +201,11 @@ asp_ExpG_gamma
 
 asp_ExpG = ((asp_eval_Exp .:+: asp_eval_ExpG) .:+:
             (asp_env_Exp .:+: asp_env_ExpG) .:+:
-            (asp_gamma .:+: asp_ExpG_gamma))
+            (asp_gamma .:+: asp_ExpG_gamma) .:+: asp_idExp)
  -- TODO: modularizar (evitar compilacion multiple) y ver si no se rompe
 
 eval_ExpG e
-  = sem_ExpG asp_ExpG
+  = sem_ExpG (asp_ExpG)
     e initialAtt #. seval
   where initialAtt = (igamma =. [] *. ienv =. M.empty *. emptyAtt)
 
@@ -211,3 +218,12 @@ logo2 =
  "/_/  /_/  \\_,_/ \\__/ \\__/ /_/    \\_,_/ /_//_/     /_/ |_|\\___/  /___/  \n"
 
 
+asp_idExp
+  =   (syn idExp p_Lit   $ Lit   <$> ter ch_lit_t)
+  .+: (syn idExp p_Var   $ Var   <$> ter ch_var_t)
+  .+: (syn idExp p_OpInf $ OpInf <$> at ch_op_inf_l idExp
+                         <*> ter ch_op_inf_op <*> at ch_op_inf_l idExp)
+  .+: (syn idExp p_OpPre $ OpPre <$> ter ch_op_pre_op
+                         <*> at ch_op_pre_e idExp)
+  .+: (syn idExp p_App   $ App   <$> ter ch_app_f <*> at ch_app_e idExp)
+  .+: emptyAspect
