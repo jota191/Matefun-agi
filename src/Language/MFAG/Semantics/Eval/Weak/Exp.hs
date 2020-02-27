@@ -139,16 +139,75 @@ computePre op e
       "-" -> -e
       _ -> error "operator not yet implemented"
 
-eval_Exp e
-  = sem_Exp (asp_eval_Exp .:+: asp_env_Exp) e initialAtt #. seval
-  where initialAtt = (ienv =. M.empty *. emptyAtt)
-
 
 notImpl = error "not yet implemented"
 
+
+
+-- | function environment type
+type TGamma = [FDef] -- TODO: Refine
+
+-- | function environment
+$(attLabels [("igamma", ''TGamma)])
+
+-- | function environment flows down
+asp_gamma
+  =   (inh igamma p_OpInf  ch_op_inf_l    $ at lhs igamma)
+  .+: (inh igamma p_OpInf  ch_op_inf_r    $ at lhs igamma)
+  .+: (inh igamma p_OpPre  ch_op_pre_e    $ at lhs igamma)
+  .+: (inh igamma p_App    ch_app_e       $ at lhs igamma)
+  -- .+: (inh igamma p_Ecu    ch_ecu_r       $ at lhs igamma)
+  -- .+: (inh igamma p_FDef   ch_fun_body    $ at lhs igamma)
+  .+: emptyAspect
+
+
+
+asp_Exp = (asp_eval_Exp .:+: asp_env_Exp .:+: asp_gamma)
+
+eval_Exp e
+  = sem_Exp asp_Exp e initialAtt #. seval
+  where initialAtt = (igamma =. [] *. ienv =. M.empty *. emptyAtt)
+                      -- ordering the other way fails
+
+
+asp_env_ExpG
+  =   (inh ienv p_ExpGIf ch_expGIf_e    $ at lhs ienv)
+  .+: (inh ienv p_ExpGIf ch_expGIf_cond $ at lhs ienv)
+  .+: (inh ienv p_ExpGIf ch_expGIf_tail $ at lhs ienv)
+  .+: (inh ienv p_ExpGOr ch_expGOr_e    $ at lhs ienv)
+  .+: emptyAspect
+
+asp_eval_ExpG
+  =   (syn seval p_ExpGIf $ at ch_expGIf_e seval)
+  .+: (syn seval p_ExpGOr $ at ch_expGOr_e seval)
+  .+: (syn ienv p_Top $ undefined) -- TODO: why this is needed? -only one-
+  .+: emptyAspect
+
+
+asp_ExpG_gamma
+  =  (inh igamma p_ExpGIf ch_expGIf_e    $ at lhs igamma)
+ .+: (inh igamma p_ExpGIf ch_expGIf_cond $ at lhs igamma)
+ .+: (inh igamma p_ExpGIf ch_expGIf_tail $ at lhs igamma)
+ .+: (inh igamma p_ExpGOr ch_expGOr_e    $ at lhs igamma)
+ .+: emptyAspect
+
+
+asp_ExpG = ((asp_eval_Exp .:+: asp_eval_ExpG) .:+:
+            (asp_env_Exp .:+: asp_env_ExpG) .:+:
+            (asp_gamma .:+: asp_ExpG_gamma))
+ -- TODO: modularizar (evitar compilacion multiple) y ver si no se rompe
+
+eval_ExpG e
+  = sem_ExpG asp_ExpG
+    e initialAtt #. seval
+  where initialAtt = (igamma =. [] *. ienv =. M.empty *. emptyAtt)
+
+e2 = ExpGOr (OpInf e1 "*" e1)
 
 logo2 =
  "   __  ___        __         ____                    ___   _____   ____\n"++
  "  /  |/  / ___ _ / /_ ___   / __/ __ __  ___  ____  / _ | / ___/  /  _/\n"++
  " / /|_/ / / _ `// __// -_) / _/  / // / / _ \\/___/ / __ |/ (_ /  _/ /  \n"++
  "/_/  /_/  \\_,_/ \\__/ \\__/ /_/    \\_,_/ /_//_/     /_/ |_|\\___/  /___/  \n"
+
+
