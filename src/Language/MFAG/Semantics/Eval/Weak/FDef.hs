@@ -19,5 +19,5 @@ import Language.MFAG.Syntax.Terminals
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
 
-import Data.Map as M
+--import Data.Set as S
 
