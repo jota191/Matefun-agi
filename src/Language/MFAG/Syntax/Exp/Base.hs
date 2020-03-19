@@ -42,9 +42,16 @@ data Val
   = ValZ    Integer
   | ValR    Double
   | ValC    Constructor
-  | ValProd [Val]
+  | ValSec  [Val]
   | ValTupl [Val]
   deriving (Show, Eq, Read)
+
+arity :: Val -> Int
+arity (ValTupl t) = length t
+arity _           = 1
+
+untup (ValTupl t) = t
+untup t           = [t]
 
 -- $(addNont "Val")
 -- $(addProd "ValZ" ''Nt_Val [("valZ_t", Ter ''Integer)])
@@ -80,9 +87,22 @@ $(addNont "Ecu")
 $(addProd "Ecu" ''Nt_Ecu [("ecu_l", Ter ''NVars),
                           ("ecu_r", NonTer ''Nt_ExpG)])
 
-
--- function definiitons
+-- function definitons
 $(addNont "FDef")
 $(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
                             ("fun_sig",  NonTer ''Nt_Sig),
                             ("fun_body", NonTer ''Nt_Ecu)])
+
+
+
+-- base expression syntax generation
+-- base types syntax generation
+$(closeNTs [''Nt_Set, ''Nt_Cart ,''Nt_Sig])
+
+-- base expression syntax generation
+$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
+
+$(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
+              ''Nt_Exp,  ''Nt_ExpG,
+              ''Nt_Cond, ''Nt_Ecu,  ''Nt_FDef])
+
