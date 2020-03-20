@@ -27,3 +27,20 @@ type UOp   = String
 
 -- | Binary Operators
 type BOp   = String
+
+
+-- | values
+data Val
+  = ValZ    Integer
+  | ValR    Double
+  | ValC    Constructor
+  | ValSec  [Val]
+  | ValTupl [Val]
+  deriving (Show, Eq, Read)
+
+arity :: Val -> Int
+arity (ValTupl t) = Prelude.length t
+arity _           = 1
+
+untup (ValTupl t) = t
+untup t           = [t]
