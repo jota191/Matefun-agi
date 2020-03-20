@@ -8,6 +8,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Language.MFAG.Syntax.Exp.Base where
 
@@ -36,28 +37,7 @@ $(addProd "Sig" ''Nt_Sig [("dom", NonTer ''Set.Nt_Set),
 -- since they are a list of terminals, to make a grammar is too much
 -- bureaucracy, I'll keep it simple. NVars is defined in Terminals.hs
 
--- values
 
-data Val
-  = ValZ    Integer
-  | ValR    Double
-  | ValC    Constructor
-  | ValSec  [Val]
-  | ValTupl [Val]
-  deriving (Show, Eq, Read)
-
-arity :: Val -> Int
-arity (ValTupl t) = length t
-arity _           = 1
-
-untup (ValTupl t) = t
-untup t           = [t]
-
--- $(addNont "Val")
--- $(addProd "ValZ" ''Nt_Val [("valZ_t", Ter ''Integer)])
--- $(addProd "ValR" ''Nt_Val [("valR_t", Ter ''Double)])
--- $(addProd "ValC" ''Nt_Val [("valC_t", Ter ''Constructor)])
--- $(addProd "ValC2" ''Nt_Val [("valC2_t", Ter ''Constructor)])
 
 -- TODO: more values, for now we are ok
 $(addNont "Exp")
@@ -68,8 +48,6 @@ $(addProd "OpInf" ''Nt_Exp [("op_inf_l",  NonTer ''Nt_Exp),
                             ("op_inf_r",  NonTer ''Nt_Exp)])
 $(addProd "OpPre" ''Nt_Exp [("op_pre_op", Ter    ''UOp),
                             ("op_pre_e",  NonTer ''Nt_Exp)])
-$(addProd "App"   ''Nt_Exp [("app_f",     Ter    ''NFun),
-                            ("app_e",     NonTer ''Nt_Exp)])
 
 
 $(addNont "Cond")
@@ -94,15 +72,4 @@ $(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
                             ("fun_body", NonTer ''Nt_Ecu)])
 
 
-
--- base expression syntax generation
--- base types syntax generation
-$(closeNTs [''Nt_Set, ''Nt_Cart ,''Nt_Sig])
-
--- base expression syntax generation
-$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
-
-$(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
-              ''Nt_Exp,  ''Nt_ExpG,
-              ''Nt_Cond, ''Nt_Ecu,  ''Nt_FDef])
 
