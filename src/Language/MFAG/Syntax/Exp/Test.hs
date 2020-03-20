@@ -19,6 +19,37 @@ import Language.MFAG.Syntax.Set.Base     as Set
 
 import Language.MFAG.Syntax.Exp.Core     as C
 import Language.MFAG.Syntax.Exp.Unfolded as U
-
+import Language.MFAG.Syntax.Exp.Base
 
 --- if this compiles, dependencies are ok
+
+-- | tests
+testIdU :: U.Exp -> U.Exp
+testIdU e
+  = U.sem_Exp ( asp_sid_U
+               .:+: dummy)
+               e emptyAtt #. sidExpU 
+  where dummy = singAsp $ syn sidCond p_Top $ undefined
+
+u 1 = U.Var "x"
+u 2 = U.Lit (ValZ 23)
+u 3 = U.OpInf (u 1) "+" (u 2)
+u 4 = U.OpInf (u 2) "+" (u 2)
+u 5 = U.OpPre "-" $ U.OpInf (u 4) "+" (u 2)
+u 6 = U.AppU (U.Ecu ["x","y"] (U.ExpGOr (u 5))) $ u 6
+
+test_id_Unfolded
+  = [u i == testIdU (u i) | i <- [1..6]]
+
+testIdC e
+  = C.sem_Exp asp_sid_C e emptyAtt #. sidExpC
+
+c 1 = C.Var "x"
+c 2 = C.Lit (ValZ 23)
+c 3 = C.OpInf (c 1) "+" (c 2)
+c 4 = C.OpInf (c 2) "+" (c 2)
+c 5 = C.OpPre "-" $ C.OpInf (c 4) "+" (c 2)
+c 6 = C.App "nomF" $ C.OpInf (c 4) "+" (c 2)
+
+test_id_Core
+  = [c i == testIdC (c i) | i <- [1..6]]
