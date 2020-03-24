@@ -49,6 +49,10 @@ $(addProd "OpInf" ''Nt_Exp [("op_inf_l",  NonTer ''Nt_Exp),
 $(addProd "OpPre" ''Nt_Exp [("op_pre_op", Ter    ''UOp),
                             ("op_pre_e",  NonTer ''Nt_Exp)])
 
+-- | Application, that is, an abstract call to a function.
+$(addProd "App"   ''Nt_Exp [("app_f",     Ter    ''NFun),
+                            ("app_e",     NonTer ''Nt_Exp)])
+
 
 $(addNont "Cond")
 $(addProd "Top" ''Nt_Cond [])

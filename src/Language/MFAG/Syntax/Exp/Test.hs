@@ -29,14 +29,16 @@ testIdU e
   = U.sem_Exp ( asp_sid_U
                .:+: dummy)
                e emptyAtt #. sidExpU 
-  where dummy = singAsp $ syn sidCond p_Top $ undefined
+
+
+dummy = singAsp $ syn sidCond p_Top $ undefined
 
 u 1 = U.Var "x"
 u 2 = U.Lit (ValZ 23)
 u 3 = U.OpInf (u 1) "+" (u 2)
-u 4 = U.OpInf (u 2) "+" (u 2)
+u 4 = U.App "nomF" $ U.OpInf (u 3) "+" (u 2)
 u 5 = U.OpPre "-" $ U.OpInf (u 4) "+" (u 2)
-u 6 = U.AppU (U.Ecu ["x","y"] (U.ExpGOr (u 5))) $ u 6
+u 6 = U.AppU (U.Ecu ["x","y"] (U.ExpGOr (u 4))) $ u 4
 
 test_id_Unfolded
   = [u i == testIdU (u i) | i <- [1..6]]
@@ -53,3 +55,10 @@ c 6 = C.App "nomF" $ C.OpInf (c 4) "+" (c 2)
 
 test_id_Core
   = [c i == testIdC (c i) | i <- [1..6]]
+
+test_id_All = test_id_Core ++ test_id_Unfolded
+
+
+t = C.sem_Exp asp_sid_ExpCasU (c 5) emptyAtt #. sidExpU
+-- TODO: Documentar esto, uso la id de una gramatica
+--  restringida a las producciones de la otra

@@ -20,19 +20,19 @@ import Language.MFAG.Syntax.Exp.Base
 import Language.MFAG.Syntax.Set.Base as Set
 
 -- | Unfolded application
-$(addProd "AppU"   ''Nt_Exp [("app_ecu",     NonTer ''Nt_Ecu),
-                               ("app_e",     NonTer ''Nt_Exp)])
+$(addProd "AppU"   ''Nt_Exp [("appu_ecu",     NonTer ''Nt_Ecu),
+                             ("appu_e",     NonTer ''Nt_Exp)])
 
 -- base expression syntax generation
 -- base types syntax generation
 $(closeNTs [''Nt_Set, ''Nt_Cart ,''Nt_Sig])
 
 -- base expression syntax generation
-$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
+$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu])
 
 $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Exp,  ''Nt_ExpG,
-              ''Nt_Cond, ''Nt_Ecu,  ''Nt_FDef])
+              ''Nt_Cond, ''Nt_Ecu])
 
 $(attLabels [("sidExpU", ''Exp)])
 $(attLabels [("sidEcu", ''Ecu)])
@@ -40,7 +40,7 @@ $(attLabels [("sidExpG", ''ExpG)])
 $(attLabels [("sidCond", ''Cond)])
 
 -- | identity for unfolded expressions
-asp_sid_ExpU
+asp_sid_ExpCasU
   =   (syn sidExpU p_Lit
          $ Lit <$> ter ch_lit_t
       )
@@ -56,11 +56,18 @@ asp_sid_ExpU
          $ OpPre <$> ter ch_op_pre_op
                  <*> at ch_op_pre_e sidExpU
       )
-  .+: (syn sidExpU p_AppU
-         $ AppU   <$> at ch_app_ecu sidEcu
-                  <*> at ch_app_e sidExpU
+  .+: (syn sidExpU p_App
+         $ App   <$> ter ch_app_f
+                 <*> at ch_app_e sidExpU
       )
   .+: emptyAspect
+
+asp_sid_ExpU
+  = (syn sidExpU p_AppU
+        $ AppU   <$> at ch_appu_ecu sidEcu
+                  <*> at ch_appu_e sidExpU
+     )
+  .+: asp_sid_ExpCasU
 
 -- | identity for Ecu
 asp_sid_Ecu

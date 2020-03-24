@@ -19,9 +19,6 @@ import Language.MFAG.Syntax.Exp.Base
 
 import Language.MFAG.Syntax.Set.Base as Set
 
--- | Application, that is, an abstract call to a function.
-$(addProd "App"   ''Nt_Exp [("app_f",     Ter    ''NFun),
-                            ("app_e",     NonTer ''Nt_Exp)])
 
 -- base expression syntax generation
 -- base types syntax generation TODO: no se si va aca
@@ -32,7 +29,7 @@ $(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
 
 $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Exp,  ''Nt_ExpG,
-              ''Nt_Cond, ''Nt_Ecu,  ''Nt_FDef])
+              ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
 
 -- | Identity attribute
 $(attLabels [("sidExpC", ''Exp)])
