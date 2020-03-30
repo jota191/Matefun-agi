@@ -23,3 +23,23 @@ import Language.MFAG.Syntax.Exp.Base
 
 import Language.MFAG.Semantics.Env
 import Language.MFAG.Semantics.Unfold
+
+
+ex_Gamma
+  = [add,twice]
+
+add = C.FDef "add" addSig
+  (C.Ecu ["x","y"]
+    (C.ExpGOr $ C.OpInf (C.Var "x") "+" (C.Var "y") ))
+
+twice = C.FDef "twice" twiceSig
+  (C.Ecu ["x"]
+    (C.ExpGOr $ C.OpInf (C.Lit $ ValR 2) "+" (C.Var "x") ))
+
+addSig = undefined
+twiceSig = undefined
+
+
+e 1 = C.App "twice" (C.OpInf (C.Lit $ ValR 2) "+" (C.Lit $ ValR 2))
+
+t 1 = unfold ex_Gamma $ e 1

@@ -75,5 +75,3 @@ $(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
                             ("fun_sig",  NonTer ''Nt_Sig),
                             ("fun_body", NonTer ''Nt_Ecu)])
 
-
-

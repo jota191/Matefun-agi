@@ -15,7 +15,8 @@ import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
 
 -- import Language.MFAG.Syntax.Exp.Base
-import Language.MFAG.Syntax.Exp.Core as C
+import Language.MFAG.Syntax.Exp.Core     as C
+import Language.MFAG.Syntax.Exp.Unfolded as U
 import Language.MFAG.Syntax.Terminals
 
 import Data.Map as M
@@ -25,13 +26,13 @@ import Data.Maybe (fromJust)
 --import Language.MFAG.Syntax.Set.Base as Set
 
 -- | function environment type
-type TGamma = [C.FDef] -- TODO: Refine
+type TGamma = [U.FDef] -- TODO: Refine
 
 -- | lookup a function by name in a gamma environment
-lookupFun ::  NFun -> TGamma -> Maybe C.FDef
+lookupFun ::  NFun -> TGamma -> Maybe U.FDef
 lookupFun f []
   = Nothing
-lookupFun f (fdef@(C.FDef f' _ _) : fdefs)
+lookupFun f (fdef@(U.FDef f' _ _) : fdefs)
   | f == f'   = Just fdef
   | otherwise = lookupFun f fdefs
 

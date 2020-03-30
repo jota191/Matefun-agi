@@ -20,7 +20,7 @@ import Language.MFAG.Syntax.Exp.Base
 import Language.MFAG.Syntax.Set.Base as Set
 
 -- | Unfolded application
-$(addProd "AppU"   ''Nt_Exp [("appu_ecu",     NonTer ''Nt_Ecu),
+$(addProd "AppU"   ''Nt_Exp [("appu_ecu",   NonTer ''Nt_Ecu),
                              ("appu_e",     NonTer ''Nt_Exp)])
 
 -- base expression syntax generation
