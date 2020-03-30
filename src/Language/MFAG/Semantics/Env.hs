@@ -15,24 +15,20 @@ import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
 
 -- import Language.MFAG.Syntax.Exp.Base
-import Language.MFAG.Syntax.Exp.Core     as C
-import Language.MFAG.Syntax.Exp.Unfolded as U
+import Language.MFAG.Syntax.Exp.Core
 import Language.MFAG.Syntax.Terminals
 
 import Data.Map as M
 import Data.Maybe (fromJust)
 
--- only base types
---import Language.MFAG.Syntax.Set.Base as Set
-
 -- | function environment type
-type TGamma = [U.FDef] -- TODO: Refine
+type TGamma = [FDef]
 
 -- | lookup a function by name in a gamma environment
-lookupFun ::  NFun -> TGamma -> Maybe U.FDef
+lookupFun ::  NFun -> TGamma -> Maybe FDef
 lookupFun f []
   = Nothing
-lookupFun f (fdef@(U.FDef f' _ _) : fdefs)
+lookupFun f (fdef@(FDef f' _ _) : fdefs)
   | f == f'   = Just fdef
   | otherwise = lookupFun f fdefs
 

@@ -27,45 +27,6 @@ import Data.Maybe (fromJust)
 import Language.MFAG.Syntax.Set.Base as Set
 
 
--- Val implements Num interface
-instance Num Val where
-  (ValZ a) + (ValZ b) = ValZ $ a + b
-  (ValR a) + (ValR b) = ValR $ a + b
-  (ValR a) + (ValZ b) = ValR $ a + fromInteger b
-  (ValZ a) + (ValR b) = ValR $ fromInteger a + b
-  
-  (ValZ a) * (ValZ b) = ValZ $ a * b
-  (ValR a) * (ValR b) = ValR $ a * b
-  (ValR a) * (ValZ b) = ValR $ a * fromInteger b
-  (ValZ a) * (ValR b) = ValR $ fromInteger a * b
-
-  abs (ValR a) = ValR $ abs a
-  abs (ValZ a) = ValZ $ abs a
-
-  fromInteger  = ValZ
-
-  negate (ValR a) = ValR $ negate a
-  negate (ValZ a) = ValZ $ negate a
-
-  signum (ValR a) = ValR $ signum a
-  signum (ValZ a) = ValZ $ signum a
-
--- Val implements Fractional interface
-instance Fractional Val where
-  (ValR a) / (ValR b) = ValR $ a / b
-  (ValR a) / (ValZ b) = ValR $ a / fromInteger b
-  (ValZ a) / (ValR b) = ValR $ fromInteger a / b
-  (ValZ a) / (ValZ b) = case (mod a b) of
-                          0 -> ValZ $ a `div` b
-                          _ -> ValR $ fromInteger a / fromInteger b
-  recip (ValR a) = ValR (1 / a)
-  recip (ValZ 1) = ValZ 1
-  recip (ValZ a) = ValR (1 / fromInteger a)
-
--- examples
-e1 = Lit $ ValZ $ 32 
-
-
 $(attLabels [("idExp", ''Exp)])
 
 -- | function environment type
@@ -238,11 +199,11 @@ computePre op e
 
 -- e2 = ExpGOr (OpInf e1 "*" e1)
 
--- logo2 =
---  "   __  ___        __         ____                    ___   _____   ____\n"++
---  "  /  |/  / ___ _ / /_ ___   / __/ __ __  ___  ____  / _ | / ___/  /  _/\n"++
---  " / /|_/ / / _ `// __// -_) / _/  / // / / _ \\/___/ / __ |/ (_ /  _/ /  \n"++
---  "/_/  /_/  \\_,_/ \\__/ \\__/ /_/    \\_,_/ /_//_/     /_/ |_|\\___/  /___/\n"
+logo2 =
+ "   __  ___        __         ____                    ___   _____   ____\n"++
+ "  /  |/  / ___ _ / /_ ___   / __/ __ __  ___  ____  / _ | / ___/  /  _/\n"++
+ " / /|_/ / / _ `// __// -_) / _/  / // / / _ \\/___/ / __ |/ (_ /  _/ /  \n"++
+ "/_/  /_/  \\_,_/ \\__/ \\__/ /_/    \\_,_/ /_//_/     /_/ |_|\\___/  /___/\n"
 
 
 -- asp_id_Exp

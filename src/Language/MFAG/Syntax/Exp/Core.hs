@@ -31,11 +31,17 @@ $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Exp,  ''Nt_ExpG,
               ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
 
+
 -- | Identity attribute
 $(attLabels [("sidExpC", ''Exp)])
+$(attLabels [("sidEcu", ''Ecu)])
+$(attLabels [("sidExpG", ''ExpG)])
+$(attLabels [("sidCond", ''Cond)])
+
+asp_dummy = singAsp $ syn sidCond p_Top $ undefined
 
 -- | identity aspect for core expressions
-asp_sid_C
+asp_sid_Exp
   =   (syn sidExpC p_Lit
          $ Lit <$> ter ch_lit_t
       )
@@ -55,4 +61,34 @@ asp_sid_C
          $ App   <$> ter ch_app_f
                  <*> at ch_app_e sidExpC
       )
+  .+: (syn sidExpC p_AppU
+         $ AppU   <$> at ch_appu_ecu sidEcu
+                  <*> at ch_appu_e sidExpC
+      )
   .+: emptyAspect
+
+
+-- | identity for Ecu
+asp_sid_Ecu
+  = (syn sidEcu p_Ecu
+       $ Ecu <$> ter ch_ecu_l
+             <*> at ch_ecu_r sidExpG
+    )
+  .+: emptyAspect
+
+-- | Identity for ExpG
+asp_sidExpG
+  =   (syn sidExpG p_ExpGIf
+         $ ExpGIf <$> at ch_expGIf_e sidExpC
+                  <*> return Top
+                  <*> at ch_expGIf_tail sidExpG
+      )
+  .+: (syn sidExpG p_ExpGOr
+         $ ExpGOr <$> at ch_expGOr_e sidExpC
+      )
+  .+: emptyAspect
+
+asp_sid_Core
+  =    asp_sid_Ecu
+  .:+: asp_sid_Exp
+  .:+: asp_sidExpG

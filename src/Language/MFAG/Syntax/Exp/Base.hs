@@ -54,11 +54,17 @@ $(addProd "App"   ''Nt_Exp [("app_f",     Ter    ''NFun),
                             ("app_e",     NonTer ''Nt_Exp)])
 
 
+-- $(addProd "Tuple")
+
+-- $(addProd "Tuple_Cons" ''Nt_Exp [("tuple_h", Nonter ''Nt_Exp)]
+
+
 $(addNont "Cond")
 $(addProd "Top" ''Nt_Cond [])
 
 -- function body definiitons (cases)
 $(addNont "ExpG")
+
 $(addProd "ExpGIf" ''Nt_ExpG [("expGIf_e", NonTer ''Nt_Exp),
                               ("expGIf_cond", NonTer ''Nt_Cond),
                               ("expGIf_tail", NonTer ''Nt_ExpG)])
@@ -75,3 +81,12 @@ $(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
                             ("fun_sig",  NonTer ''Nt_Sig),
                             ("fun_body", NonTer ''Nt_Ecu)])
 
+-- function definitons
+$(addNont "FDef")
+$(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
+                            ("fun_sig",  NonTer ''Nt_Sig),
+                            ("fun_body", NonTer ''Nt_Ecu)])
+
+-- | Unfolded application
+$(addProd "AppU"   ''Nt_Exp [("appu_ecu",   NonTer ''Nt_Ecu),
+                             ("appu_e",     NonTer ''Nt_Exp)])

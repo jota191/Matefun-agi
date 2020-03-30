@@ -17,8 +17,7 @@ import Language.Grammars.AspectAG.TH
 import Language.MFAG.Syntax.Terminals
 import Language.MFAG.Syntax.Set.Base     as Set
 
-import Language.MFAG.Syntax.Exp.Core     as C
-import Language.MFAG.Syntax.Exp.Unfolded as U
+import Language.MFAG.Syntax.Exp.Core
 import Language.MFAG.Syntax.Exp.Base
 
 import Language.MFAG.Semantics.Env
@@ -39,39 +38,45 @@ asp_iGamma
       )
   .+: (inh igamma p_App    ch_app_e
          $ at lhs igamma
+      )      
+  .+: (inh igamma p_AppU    ch_appu_ecu
+         $ at lhs igamma
       )
-  -- .+: (inh igamma p_ExpGIf ch_expGIf_e
-  --        $ at lhs igamma
-  --     )
-  -- .+: (inh igamma p_ExpGIf ch_expGIf_cond
-  --        $ at lhs igamma
-  --     )
-  -- .+: (inh igamma p_ExpGIf ch_expGIf_tail
-  --        $ at lhs igamma
-  --     )
-  -- .+: (inh igamma p_ExpGOr ch_expGOr_e
-  --        $ at lhs igamma
-  --     )
-  -- .+: (inh igamma p_Ecu    ch_ecu_r
-  --        $ at lhs igamma
-  --     )
+  .+: (inh igamma p_AppU    ch_appu_e
+         $ at lhs igamma
+      )      
+  .+: (inh igamma p_ExpGIf ch_expGIf_e
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_ExpGIf ch_expGIf_cond
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_ExpGIf ch_expGIf_tail
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_ExpGOr ch_expGOr_e
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_Ecu    ch_ecu_r
+         $ at lhs igamma
+      )
   .+: emptyAspect
 
 type Error = String
--- type UnfoldedR = Either U.Exp Error
 
--- $(attLabels [("sUnfold", ''U.Exp)])
+asp_Unfold
+  =  (synmodM sidExpC p_App
+       $ do gamm <- at lhs igamma
+            nfun <- ter ch_app_f
+            arg  <- at ch_app_e sidExpC
+            case lookupFun nfun gamm of
+              Nothing -> error "name not defined"
+              Just (FDef _ sig ecu) -> return (AppU ecu arg)
+     )
+  .+: asp_sid_Core
 
-asp_sUnfold
-  = (synmodM sidExpU p_App
-       $ do gamma <- at lhs igamma
-            fname <- ter ch_app_f
-            arg   <- at ch_app_e sidExpU
-            return $ U.AppU (fun_body $ fromJust $ lookupFun fname gamma) arg
-    )
-  .+: asp_sid_ExpCasU
 
 
-unfold :: TGamma -> C.Exp -> U.Exp
-unfold iG e
-  = C.sem_Exp (asp_iGamma .:+: asp_sUnfold) e (igamma =. iG *. emptyAtt) #. sidExpU
+asp_unfold_aux1 = asp_iGamma .:+: asp_Unfold
+
+asp_unfold_All = asp_dummy .:+: asp_unfold_aux1
