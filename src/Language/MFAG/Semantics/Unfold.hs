@@ -60,6 +60,18 @@ asp_iGamma
   .+: (inh igamma p_Ecu    ch_ecu_r
          $ at lhs igamma
       )
+  .+: (inh igamma p_EProd  ch_eprod_e
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_TCons  ch_tuple_h
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_TCons  ch_tuple_t
+         $ at lhs igamma
+      )
+  .+: (inh igamma p_TSing  ch_tuple_s
+         $ at lhs igamma
+      )
   .+: emptyAspect
 
 type Error = String
@@ -73,7 +85,8 @@ asp_Unfold
               Nothing -> error "name not defined"
               Just (FDef _ sig ecu) -> return (AppU ecu arg)
      )
-  .+: asp_sid_Core
+  .+: 
+  asp_sid_Core
 
 
 

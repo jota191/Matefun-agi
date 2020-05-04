@@ -11,8 +11,8 @@
 
 module Language.MFAG.Semantics.Env where
 
-import Language.Grammars.AspectAG
-import Language.Grammars.AspectAG.TH
+--import Language.Grammars.AspectAG
+--import Language.Grammars.AspectAG.TH
 
 -- import Language.MFAG.Syntax.Exp.Base
 import Language.MFAG.Syntax.Exp.Core

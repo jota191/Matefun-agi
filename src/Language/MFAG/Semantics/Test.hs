@@ -45,5 +45,5 @@ unfold gamma e
     ( igamma =. gamma *. emptyAtt) #. sidExpC
 
 
---e 1 = App "twice" (OpInf (Lit $ ValR 2) "+" (Lit $ ValR 2))
---t 1 = unfold ex_Gamma $ e 1
+e 1 = App "twice" (OpInf (Lit $ ValR 2) "+" (Lit $ ValR 2))
+t 1 = unfold ex_Gamma $ e 1

@@ -25,20 +25,22 @@ import Language.MFAG.Syntax.Set.Base as Set
 $(closeNTs [''Nt_Set, ''Nt_Cart ,''Nt_Sig])
 
 -- base expression syntax generation
-$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
+$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef, ''Nt_Tuple])
 
 $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Exp,  ''Nt_ExpG,
-              ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef])
+              ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef , ''Nt_Tuple
+             ])
 
 
 -- | Identity attribute
-$(attLabels [("sidExpC", ''Exp)])
-$(attLabels [("sidEcu", ''Ecu)])
-$(attLabels [("sidExpG", ''ExpG)])
-$(attLabels [("sidCond", ''Cond)])
+$(attLabels [("sidExpC",  ''Exp)])
+$(attLabels [("sidEcu",   ''Ecu)])
+$(attLabels [("sidExpG",  ''ExpG)])
+$(attLabels [("sidCond",  ''Cond)])
+$(attLabels [("sidTuple", ''Tuple)])
 
-asp_dummy = singAsp $ syn sidCond p_Top $ undefined
+asp_dummy = singAsp $ syn sidCond p_Top $ return Top
 
 -- | identity aspect for core expressions
 asp_sid_Exp
@@ -65,7 +67,11 @@ asp_sid_Exp
          $ AppU   <$> at ch_appu_ecu sidEcu
                   <*> at ch_appu_e sidExpC
       )
+  .+: (syn sidExpC p_EProd
+         $ EProd <$> at ch_eprod_e sidTuple
+      )
   .+: emptyAspect
+
 
 
 -- | identity for Ecu
@@ -77,7 +83,7 @@ asp_sid_Ecu
   .+: emptyAspect
 
 -- | Identity for ExpG
-asp_sidExpG
+asp_sid_ExpG
   =   (syn sidExpG p_ExpGIf
          $ ExpGIf <$> at ch_expGIf_e sidExpC
                   <*> return Top
@@ -88,7 +94,21 @@ asp_sidExpG
       )
   .+: emptyAspect
 
+asp_sid_Tuple
+  =   (syn sidTuple p_TCons
+         $ TCons <$> at ch_tuple_h sidExpC <*> at ch_tuple_t sidTuple
+      )
+  .+: (syn sidTuple p_TSing
+         $ TSing <$> at ch_tuple_s sidExpC
+      )
+  .+: emptyAspect
+
+asp_sid_aux
+  =    asp_sid_Exp
+  .:+: asp_sid_ExpG
+  .:+: asp_sid_Tuple
+
 asp_sid_Core
   =    asp_sid_Ecu
-  .:+: asp_sid_Exp
-  .:+: asp_sidExpG
+  .:+: asp_sid_aux
+
