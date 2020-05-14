@@ -10,7 +10,7 @@ name:                Matefun-agi
 -- PVP summary:      +-+------- breaking API changes
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
-version:             0.1.0.0
+version:             0.6.0.0
 
 -- A short (one-line) description of the package.
 -- synopsis:
@@ -25,7 +25,7 @@ license:             GPL-3
 license-file:        LICENSE
 
 -- The package author(s).
-author:              Juan García Garland
+author:              Juan García-Garland
 
 -- An email address to which users can send suggestions, bug reports, and
 -- patches.
@@ -46,41 +46,12 @@ extra-source-files:  ChangeLog.md
 cabal-version:       >=1.10
 
 
-library
-  -- Modules exported by the library.
-  exposed-modules:     Language.MFAG.Semantics.Env,
-                       Language.MFAG.Semantics.Unfold,
-                       Language.MFAG.Syntax.Exp.Base,
-                       Language.MFAG.Syntax.Exp.Core,
-                       Language.MFAG.Syntax.Set.Base,
-                       Language.MFAG.Syntax.Terminals
-  -- Modules included in this library but not exported.
-  -- other-modules:
-
-  -- LANGUAGE extensions used by modules in this package.
-  other-extensions:    TemplateHaskell, FlexibleContexts, GADTs, TypeFamilies, AllowAmbiguousTypes, NoMonomorphismRestriction, DataKinds, FlexibleInstances, MultiParamTypeClasses, TypeApplications, RankNTypes
-
-  -- Other library packages from which modules are imported.
-  build-depends:       base >=4.12 && <4.13, text >=1.2 && <1.3, containers >=0.6 && <0.7, AspectAG >=0.6 && <0.7
-
-  -- Directories containing source files.
-  hs-source-dirs:      src
-
-  -- Base language which the package is written in.
-  default-language:    Haskell2010
-
-
 executable Matefun-agi
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
   -- Modules included in this executable, other than Main.
-  other-modules:      Language.MFAG.Semantics.Env,
-                      Language.MFAG.Semantics.Unfold,
-                      Language.MFAG.Syntax.Exp.Base,
-                      Language.MFAG.Syntax.Exp.Core,
-                      Language.MFAG.Syntax.Set.Base,
-                      Language.MFAG.Syntax.Terminals
+  -- other-modules:
 
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    TemplateHaskell, FlexibleContexts, GADTs, TypeFamilies, AllowAmbiguousTypes, NoMonomorphismRestriction, DataKinds, FlexibleInstances, MultiParamTypeClasses, TypeApplications, RankNTypes
