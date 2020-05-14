@@ -42,3 +42,8 @@ $(addProd "Cart" ''Nt_Set [("cart_c", NonTer ''Nt_Cart)])
 $(addProd "Cart_Nil" ''Nt_Cart [("cart_nil_t", Ter ''())])
 $(addProd "Cart_Cons" ''Nt_Cart [("cart_hd_t", NonTer ''Nt_Set),
                                  ("cart_tl_t", NonTer ''Nt_Cart)])
+
+
+-- base expression syntax generation
+-- base types syntax generation TODO: no se si va aca
+$(closeNTs [''Nt_Set, ''Nt_Cart])
