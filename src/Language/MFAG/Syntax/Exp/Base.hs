@@ -49,7 +49,13 @@ $(addProd "EProd" ''Nt_Exp [("eprod_e",     NonTer ''Nt_Tuple)])
 -- cond
 $(addNont "Cond")
 $(addProd "Top" ''Nt_Cond [])
-
+$(addProd "Equa" ''Nt_Cond [("equa_l", NonTer ''Nt_Exp),
+                            ("equa_op", Ter   ''EOp),
+                            ("equa_r", NonTer ''Nt_Exp)])
+$(addProd "And" ''Nt_Cond [("and_l", NonTer ''Nt_Cond),
+                           ("and_r", NonTer ''Nt_Cond)])
+$(addProd "Neg" ''Nt_Cond [("neg_e", NonTer ''Nt_Cond)])
+  
 -- function body definiitons (cases)
 $(addNont "ExpG")
 
@@ -69,7 +75,3 @@ $(addNont "FDef")
 $(addProd "FDef" ''Nt_FDef [("nfun", Ter ''NFun),
                             ("fun_sig",  NonTer ''Nt_Sig),
                             ("fun_body", NonTer ''Nt_Ecu)])
-
--- | Unfolded application
-$(addProd "AppU"   ''Nt_Exp [("appu_ecu",   NonTer ''Nt_Ecu),
-                             ("appu_e",     NonTer ''Nt_Exp)])

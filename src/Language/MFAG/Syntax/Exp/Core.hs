@@ -19,19 +19,18 @@ import Language.MFAG.Syntax.Exp.Base
 
 import Language.MFAG.Syntax.Set.Base as Set
 
+-- | Unfolded application
+$(addProd "AppU"   ''Nt_Exp [("appu_ecu",   NonTer ''Nt_Ecu),
+                             ("appu_e",     NonTer ''Nt_Exp)])
+
 
 -- base expression syntax generation
--- base types syntax generation TODO: no se si va aca
-$(closeNTs [''Nt_Set, ''Nt_Cart ,''Nt_Sig])
-
--- base expression syntax generation
-$(closeNTs [''Nt_Exp, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef, ''Nt_Tuple])
+$(closeNTs [''Nt_Exp, ''Nt_Sig, ''Nt_ExpG, ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef, ''Nt_Tuple])
 
 $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Exp,  ''Nt_ExpG,
               ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef , ''Nt_Tuple
              ])
-
 
 -- | Identity attribute
 $(attLabels [("sidExpC",  ''Exp)])
@@ -40,37 +39,62 @@ $(attLabels [("sidExpG",  ''ExpG)])
 $(attLabels [("sidCond",  ''Cond)])
 $(attLabels [("sidTuple", ''Tuple)])
 
-asp_dummy = singAsp $ syn sidCond p_Top $ return Top
-
+asp_sid_Cond =
+  syn sidCond p_Top (return Top)
+  .+:
+  (syn sidCond p_Equa
+    $ Equa <$> at ch_equa_l sidExpC
+           <*> ter ch_equa_op
+           <*> at ch_equa_r sidExpC
+  )
+  .+:
+  (syn sidCond p_And
+    $ And <$> at ch_and_l sidCond <*> at ch_and_r sidCond
+  )
+  .+:
+  (syn sidCond p_Neg
+    $ Neg <$> at ch_neg_e sidCond
+  )
+  .+:
+  emptyAspect
+  
 -- | identity aspect for core expressions
 asp_sid_Exp
-  =   (syn sidExpC p_Lit
-         $ Lit <$> ter ch_lit_t
-      )
-  .+: (syn sidExpC p_Var
-         $ Var <$> ter ch_var_t
-      )
-  .+: (syn sidExpC p_OpInf
-         $ OpInf <$> at  ch_op_inf_l sidExpC
-                 <*> ter ch_op_inf_op
-                 <*> at  ch_op_inf_r sidExpC
-      )
-  .+: (syn sidExpC p_OpPre
-         $ OpPre <$> ter ch_op_pre_op
-                 <*> at ch_op_pre_e sidExpC
-      )
-  .+: (syn sidExpC p_App
-         $ App   <$> ter ch_app_f
-                 <*> at ch_app_e sidExpC
-      )
-  .+: (syn sidExpC p_AppU
-         $ AppU   <$> at ch_appu_ecu sidEcu
-                  <*> at ch_appu_e sidExpC
-      )
-  .+: (syn sidExpC p_EProd
-         $ EProd <$> at ch_eprod_e sidTuple
-      )
-  .+: emptyAspect
+  =
+  (syn sidExpC p_Lit
+    $ Lit <$> ter ch_lit_t
+  )
+  .+:
+  (syn sidExpC p_Var
+    $ Var <$> ter ch_var_t
+  )
+  .+:
+  (syn sidExpC p_OpInf
+    $ OpInf <$> at  ch_op_inf_l sidExpC
+    <*> ter ch_op_inf_op
+    <*> at  ch_op_inf_r sidExpC
+  )
+  .+:
+  (syn sidExpC p_OpPre
+    $ OpPre <$> ter ch_op_pre_op
+    <*> at ch_op_pre_e sidExpC
+  )
+  .+:
+  (syn sidExpC p_App
+    $ App   <$> ter ch_app_f
+    <*> at ch_app_e sidExpC
+  )
+  .+:
+  (syn sidExpC p_AppU
+    $ AppU   <$> at ch_appu_ecu sidEcu
+    <*> at ch_appu_e sidExpC
+  )
+  .+:
+  (syn sidExpC p_EProd
+    $ EProd <$> at ch_eprod_e sidTuple
+  )
+  .+:
+  emptyAspect
 
 
 
