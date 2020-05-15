@@ -1,11 +1,12 @@
 module Language.MFAG.Syntax.Terminals where
 
-import Data.Text as T
+
 import Data.Set as S
+import Data.List as L
 
 -- | Constructors, each one has an identifier
 newtype Constructor
-  = C T.Text {- TODO: is this a good choice? -}
+  = C String -- T.Text {- TODO: is this a good choice? -}
   deriving (Eq, Read, Show, Ord)
 
 -- | Enumeration, set of strings
@@ -28,6 +29,8 @@ type UOp   = String
 -- | Binary Operators
 type BOp   = String
 
+-- | Equation operators
+type EOp   = String
 
 -- | values
 data Val
@@ -80,3 +83,11 @@ instance Fractional Val where
   recip (ValR a) = ValR (1 / a)
   recip (ValZ 1) = ValZ 1
   recip (ValZ a) = ValR (1 / fromInteger a)
+
+
+printVal :: Val -> String
+printVal (ValZ i) = show i
+printVal (ValR d) = show d
+printVal (ValC (C name)) = name
+printVal (ValSec vs) = (L.intercalate ":" $ L.map printVal vs) ++ "[]"
+printVal (ValTupl t) = '(':(L.intercalate "," $ L.map printVal t) ++ ")"

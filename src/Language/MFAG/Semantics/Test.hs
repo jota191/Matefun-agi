@@ -27,7 +27,7 @@ import Language.MFAG.Semantics.PrettyPrintCore
 
 
 ex_Gamma
-  = [add,twice, inv]
+  = [add, twice, inv, partes]
 
 add = FDef "add" addSig
   (Ecu ["x","y"]
@@ -40,6 +40,11 @@ twice = FDef "twice" twiceSig
 inv = FDef "inv" undefined
   $ Ecu ["x"] $ ExpGIf (Var "x") (Equa (Var "x") ">" (Lit (ValR 0)))
   (ExpGOr (OpPre "-" $ Var "x"))
+
+partes = FDef "par" undefined
+  $ Ecu ["x"] $ ExpGIf (Var "x") (Equa (Var "x") ">" (Lit (ValR 0))) $
+  ExpGIf (Var "x") (Equa (Var "x") ">" (Lit (ValR 0))) (ExpGOr (OpPre "-" $ Var "x"))
+
 
 addSig = undefined
 twiceSig = undefined

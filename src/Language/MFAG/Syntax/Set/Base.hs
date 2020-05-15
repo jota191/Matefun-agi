@@ -15,6 +15,8 @@ import Language.MFAG.Syntax.Terminals
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
+import Language.MFAG.Utils.Attributes
+
 
 -- | Set production
 $(addNont "Set")
@@ -43,7 +45,22 @@ $(addProd "Cart_Nil" ''Nt_Cart [("cart_nil_t", Ter ''())])
 $(addProd "Cart_Cons" ''Nt_Cart [("cart_hd_t", NonTer ''Nt_Set),
                                  ("cart_tl_t", NonTer ''Nt_Cart)])
 
-
 -- base expression syntax generation
 -- base types syntax generation TODO: no se si va aca
 $(closeNTs [''Nt_Set, ''Nt_Cart])
+
+asp_pp_Set =
+  (syn spp p_Real (return ""))
+  .+:
+  (syn spp p_Inte (return ""))
+  .+:
+  (syn spp p_Enum (return ""))
+  .+:
+  (syn spp p_Sec (return ""))
+  .+:
+  (syn spp p_Cart (return ""))
+  .+:
+  (syn spp p_Cart_Nil (return ""))
+  .+:
+  (syn spp p_Cart_Cons (return ""))
+  .+: emptyAspect

@@ -32,12 +32,14 @@ $(mkSemFuncs [''Nt_Set,  ''Nt_Cart, ''Nt_Sig,
               ''Nt_Cond, ''Nt_Ecu, ''Nt_FDef , ''Nt_Tuple
              ])
 
+
 -- | Identity attribute
 $(attLabels [("sidExpC",  ''Exp)])
 $(attLabels [("sidEcu",   ''Ecu)])
 $(attLabels [("sidExpG",  ''ExpG)])
 $(attLabels [("sidCond",  ''Cond)])
 $(attLabels [("sidTuple", ''Tuple)])
+
 
 asp_sid_Cond =
   syn sidCond p_Top (return Top)
