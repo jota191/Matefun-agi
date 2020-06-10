@@ -23,15 +23,13 @@ type NVars = [NVar]
 -- | Function names
 type NFun  = String
 
--- | Unary operators
-type UOp   = String
-
 -- | Binary Operators
-type BOp   = String
+data BOp   = Plus | Minus | Times | Exp | Div
+           deriving (Ord, Eq, Show, Read)
 
 -- | Equation operators
-type EOp   = String
-
+data EOp   = GEq | Eq
+           deriving (Ord, Eq, Show, Read)
 -- | values
 data Val
   = ValZ    Integer

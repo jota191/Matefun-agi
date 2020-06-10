@@ -22,8 +22,8 @@ import Language.MFAG.Syntax.Set.Base as Set
 
 -- Definition of signatures, type of functions
 $(addNont "Sig")
-$(addProd "Sig" ''Nt_Sig [("dom", NonTer ''Set.Nt_Set),
-                          ("cod", NonTer ''Set.Nt_Set)])
+$(addProd "Sig" ''Nt_Sig []) -- ("dom", NonTer ''Set.Nt_Set),
+                             -- ("cod", NonTer ''Set.Nt_Set)])
 
 
 $(addNont "Exp")
@@ -32,8 +32,6 @@ $(addProd "Var"   ''Nt_Exp [("var_t",     Ter    ''NVar)])
 $(addProd "OpInf" ''Nt_Exp [("op_inf_l",  NonTer ''Nt_Exp),
                             ("op_inf_op", Ter    ''BOp),
                             ("op_inf_r",  NonTer ''Nt_Exp)])
-$(addProd "OpPre" ''Nt_Exp [("op_pre_op", Ter    ''UOp),
-                            ("op_pre_e",  NonTer ''Nt_Exp)])
 
 -- | Application, that is, an abstract call to a function.
 $(addProd "App"   ''Nt_Exp [("app_f",     Ter    ''NFun),

@@ -28,7 +28,9 @@ type TGamma = [FDef]
 -- | function environment
 $(attLabels [("igamma", ''TGamma)])
 
-asp_iGamma =
+
+asp_iGamma = copyAll igamma
+copyAll igamma =
   (inh igamma p_OpInf ch_op_inf_l $ at lhs igamma) .+:
   (inh igamma p_OpInf ch_op_inf_r $ at lhs igamma) .+:
   (inh igamma p_OpPre ch_op_pre_e $ at lhs igamma) .+:
@@ -67,9 +69,9 @@ type Env = M.Map NVar Val
 -- eval attribute
 $(attLabels [("ienv", ''Env)])
 
-asp_env_Exp
-  =   (inh ienv p_OpInf ch_op_inf_l $ at lhs ienv)
-  .+: (inh ienv p_OpInf ch_op_inf_r $ at lhs ienv)
-  .+: (inh ienv p_OpPre ch_op_pre_e $ at lhs ienv)
-  .+: (inh ienv p_App   ch_app_e    $ at lhs ienv)
-  .+: emptyAspect
+asp_env = copyAll ienv
+  -- =   (inh ienv p_OpInf ch_op_inf_l $ at lhs ienv)
+  -- .+: (inh ienv p_OpInf ch_op_inf_r $ at lhs ienv)
+  -- .+: (inh ienv p_OpPre ch_op_pre_e $ at lhs ienv)
+  -- .+: (inh ienv p_App   ch_app_e    $ at lhs ienv)
+  -- .+: emptyAspect
