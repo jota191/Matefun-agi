@@ -16,6 +16,12 @@ import Language.MFAG.Syntax.Terminals
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
 import Language.MFAG.Utils.Attributes
+import Data.Singletons
+import Data.Singletons.TH
+import Data.Singletons.TypeLits
+import Data.Singletons.Prelude.Ord
+import Data.Singletons.Prelude.Eq
+import Data.Singletons.Prelude.Either
 
 
 -- | Set production
