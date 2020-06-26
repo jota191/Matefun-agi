@@ -37,7 +37,8 @@ c 4 = C.OpInf (c 2) Plus (c 2)
 --c 5 = C.OpPre "-" (C.OpInf (c 4) Plus (c 2)) 
 c 6 = C.App "nomF" (C.OpInf (c 4) Plus (c 2))
 --c 7 = C.AppU (Ecu ["x"] (ExpGOr (c 6))) (C.OpInf (c 4) "+" (c 2))  
-c 8 = C.EProd (TCons (c 5) (TSing (c 3)))
+c 8 = C.EProd (TCons (c 4) (TSing (c 3)))
 
 -- test_id_Core
 --   = [c i == testIdC (c i) | i <- [1..8]]
+f = FDef "f" Sig (Ecu ["x"] $ ExpGOr $ c 8)

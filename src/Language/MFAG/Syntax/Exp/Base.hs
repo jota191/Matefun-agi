@@ -18,6 +18,7 @@ import Language.Grammars.AspectAG.TH
 import Language.MFAG.Syntax.Terminals
 
 import Language.MFAG.Syntax.Set.Base as Set
+import Data.Singletons
 
 
 -- Definition of signatures, type of functions
