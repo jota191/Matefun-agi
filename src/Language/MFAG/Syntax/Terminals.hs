@@ -13,6 +13,9 @@ newtype Constructor
 type EnumConsts = S.Set Constructor
 
 
+data Sort = Z | R | Enum |  Tuple [Sort] | List Sort
+          deriving (Eq, Ord, Show, Read)
+
 
 -- | variables..
 type NVar  = String
