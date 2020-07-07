@@ -139,9 +139,13 @@ asp_sid_Core'' =
   .:+: asp_sid_FDef
 
 
-asp_sid_Sig = singAsp $ syn sidSig p_Sig (return $ Sig undefined undefined)
+asp_sid_Sig = singAsp
+  $ syn sidSig p_Sig (Sig <$> at ch_dom sidSet <*> at ch_cod sidSet)
 
-asp_sid_Set = singAsp $ syn sidSet p_Set (return (Set undefined undefined undefined))
+asp_sid_Set = singAsp
+  $ syn sidSet p_Set (Set <$> ter ch_sort
+                       <*> ter ch_xs
+                       <*> at ch_refinement sidCond)
 
 aspSId = AspAll
   asp_sid_Set
@@ -153,5 +157,20 @@ aspSId = AspAll
   asp_sid_FDef
   asp_sid_Tuple
 
-id :: FDef -> FDef
-id f = sem_FDef aspSId f emptyAtt #. sidFDef
+idFDef :: FDef -> FDef
+idFDef f = sem_FDef aspSId f emptyAtt #. sidFDef
+
+r = Set R [] Top
+
+c 1 = Var "x"
+c 2 = Lit (ValZ 23)
+c 3 = OpInf (c 1) Plus (c 2)
+c 4 = OpInf (c 2) Plus (c 2)
+--c 5 = OpPre "-" (OpInf (c 4) Plus (c 2)) 
+c 6 = App "nomF" (OpInf (c 4) Plus (c 2))
+--c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))  
+c 8 = EProd (TCons (c 4) (TSing (c 3)))
+
+-- test_id_Core
+--   = [c i == testIdC (c i) | i <- [1..8]]
+f = FDef "f" (Sig r r) (Ecu ["x"] $ ExpGOr $ c 8)
