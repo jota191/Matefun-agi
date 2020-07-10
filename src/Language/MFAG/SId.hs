@@ -15,14 +15,13 @@ module Language.MFAG.SId where
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
-import Data.GenRec -- should be exported by AAG, perhaps?
 
 import Language.MFAG.AST
 import Language.MFAG.Syntax.Terminals
-import  Language.MFAG.SemFuncs
+import Language.MFAG.SemFuncs
 
 import Prelude hiding (exp)
-import Data.Singletons
+--import Data.Singletons
 
 
 -- | Identity attribute
@@ -111,7 +110,7 @@ asp_sid_ExpG
   .+: 
   (syn sidExpG p_ExpGOr
          $ ExpGOr <$> at ch_expGOr_e sidExpC
-      )
+  )
   .+: emptyAspect
 
 asp_sid_Tuple
@@ -147,7 +146,7 @@ asp_sid_Set = singAsp
                        <*> ter ch_xs
                        <*> at ch_refinement sidCond)
 
-aspSId = AspAll
+asp_sid = AspAll
   asp_sid_Set
   asp_sid_Sig
   asp_sid_Exp
@@ -158,7 +157,7 @@ aspSId = AspAll
   asp_sid_Tuple
 
 idFDef :: FDef -> FDef
-idFDef f = sem_FDef aspSId f emptyAtt #. sidFDef
+idFDef f = sem_FDef asp_sid f emptyAtt #. sidFDef
 
 r = Set R [] Top
 

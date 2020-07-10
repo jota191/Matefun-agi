@@ -1,5 +1,6 @@
 module Language.MFAG.Syntax.Terminals where
 
+import Language.MFAG.Utils
 
 import Data.Set as S
 import Data.List as L
@@ -13,10 +14,14 @@ newtype Constructor
 type EnumConsts = S.Set Constructor
 
 
-data Sort = Z | R | Enum |  Tuple [Sort] | List Sort
-          deriving (Eq, Ord, Show, Read)
-
-
+data Sort = Z | R | Enum | Tuple [Sort] | List Sort
+          deriving (Eq, Ord, Read)
+instance Show Sort where
+  show Z = "Z"
+  show R = "R"
+  show Enum = "" -- info got from semantics
+  show (Tuple t) = wrapParen . intercalate ", " . L.map show $ t
+  show (List s) = show s ++ "*"
 -- | variables..
 type NVar  = String
 
@@ -28,7 +33,13 @@ type NFun  = String
 
 -- | Binary Operators
 data BOp   = Plus | Minus | Times | Exp | Div
-           deriving (Ord, Eq, Show, Read)
+           deriving (Ord, Eq, Read)
+instance Show BOp where
+  show Plus  = "+"
+  show Minus = "-"
+  show Times = "*"
+  show Exp   = "^"
+  show Div   = "/"
 
 -- | Equation operators
 data EOp   = GEq | Eq

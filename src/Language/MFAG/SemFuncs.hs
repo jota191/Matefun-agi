@@ -14,13 +14,12 @@ module Language.MFAG.SemFuncs where
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
-import Data.GenRec -- should be exported by AAG, perhaps?
 
 import Language.MFAG.AST
 import Language.MFAG.Syntax.Terminals
 import Prelude hiding (exp)
 
-import Data.Singletons
+--import Data.Singletons
 
 
 -- $(mkSemFuncs [''Nt_Set, ''Nt_Exp, ''Nt_Sig,
