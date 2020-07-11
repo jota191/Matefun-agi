@@ -40,8 +40,14 @@ asp_idelta = AspAll
   asp_idelta_FDef
   asp_idelta_Tuple
 
-asp_idelta_Set   = undefined
-asp_idelta_Sig   = undefined
+asp_idelta_Set   =
+  idelta `copyAtChi` ch_refinement .+:
+  emptyAspect
+  
+asp_idelta_Sig   =
+  idelta `copyAtChi` ch_dom .+:
+  idelta `copyAtChi` ch_cod .+:
+  emptyAspect
 
 asp_idelta_Exp   =
   idelta `copyAtChi` ch_op_inf_l .+:
@@ -79,4 +85,3 @@ asp_idelta_Tuple =
   idelta `copyAtChi` ch_tuple_t .+:
   idelta `copyAtChi` ch_tuple_s .+:
   emptyAspect
-
