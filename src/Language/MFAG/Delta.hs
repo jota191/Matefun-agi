@@ -46,13 +46,37 @@ asp_idelta_Sig   = undefined
 asp_idelta_Exp   =
   idelta `copyAtChi` ch_op_inf_l .+:
   idelta `copyAtChi` ch_op_inf_r .+:
-  idelta `copyAtChi` ch_app_e .+:
-  idelta `copyAtChi` ch_eprod_e .+:
-  idelta `copyAtChi` ch_index_i .+:
+  idelta `copyAtChi` ch_app_e    .+:
+  idelta `copyAtChi` ch_eprod_e  .+:
+  idelta `copyAtChi` ch_index_e  .+:
+  emptyAspect
+
+asp_idelta_ExpG  =
+  idelta `copyAtChi` ch_expGIf_e    .+:
+  idelta `copyAtChi` ch_expGIf_cond .+:
+  idelta `copyAtChi` ch_expGIf_tail .+:
+  idelta `copyAtChi` ch_expGOr_e    .+:
+  emptyAspect
+
+asp_idelta_Cond  =
+  idelta `copyAtChi` ch_equa_l .+:
+  idelta `copyAtChi` ch_equa_r .+:
+  idelta `copyAtChi` ch_and_l  .+:
+  idelta `copyAtChi` ch_and_l  .+:
+  emptyAspect
+
+asp_idelta_Ecu   =
+  idelta `copyAtChi` ch_ecu_r .+:
   emptyAspect
   
-asp_idelta_ExpG  = undefined
-asp_idelta_Cond  = undefined 
-asp_idelta_Ecu   = undefined
-asp_idelta_FDef  = undefined
-asp_idelta_Tuple = undefined
+asp_idelta_FDef  =
+  idelta `copyAtChi` ch_fun_sig .+:
+  idelta `copyAtChi` ch_fun_body .+:
+  emptyAspect
+
+asp_idelta_Tuple =
+  idelta `copyAtChi` ch_tuple_h .+:
+  idelta `copyAtChi` ch_tuple_t .+:
+  idelta `copyAtChi` ch_tuple_s .+:
+  emptyAspect
+
