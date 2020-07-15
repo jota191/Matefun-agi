@@ -32,7 +32,7 @@ type NVars = [NVar]
 type NFun  = String
 
 -- | Binary Operators
-data BOp   = Plus | Minus | Times | Exp | Div
+data BOp   = Plus | Minus | Times | Exp | Div | Cons
            deriving (Ord, Eq, Read)
 instance Show BOp where
   show Plus  = "+"
@@ -40,6 +40,7 @@ instance Show BOp where
   show Times = "*"
   show Exp   = "^"
   show Div   = "/"
+  show Cons  = ":"
 
 -- | Equation operators
 data EOp   = GEq | Eq
@@ -57,44 +58,13 @@ arity :: Val -> Int
 arity (ValTupl t) = Prelude.length t
 arity _           = 1
 
+ith :: Val -> Int -> Val
+ith (ValTupl t) i = t !! i
+ith _ _ = error "type error, index to nontuple arg"
+
 untup (ValTupl t) = t
 untup t           = [t]
 
-
--- Val implements Num interface
-instance Num Val where
-  (ValZ a) + (ValZ b) = ValZ $ a + b
-  (ValR a) + (ValR b) = ValR $ a + b
-  (ValR a) + (ValZ b) = ValR $ a + fromInteger b
-  (ValZ a) + (ValR b) = ValR $ fromInteger a + b
-  
-  (ValZ a) * (ValZ b) = ValZ $ a * b
-  (ValR a) * (ValR b) = ValR $ a * b
-  (ValR a) * (ValZ b) = ValR $ a * fromInteger b
-  (ValZ a) * (ValR b) = ValR $ fromInteger a * b
-
-  abs (ValR a) = ValR $ abs a
-  abs (ValZ a) = ValZ $ abs a
-
-  fromInteger  = ValZ
-
-  negate (ValR a) = ValR $ negate a
-  negate (ValZ a) = ValZ $ negate a
-
-  signum (ValR a) = ValR $ signum a
-  signum (ValZ a) = ValZ $ signum a
-
--- Val implements Fractional interface
-instance Fractional Val where
-  (ValR a) / (ValR b) = ValR $ a / b
-  (ValR a) / (ValZ b) = ValR $ a / fromInteger b
-  (ValZ a) / (ValR b) = ValR $ fromInteger a / b
-  (ValZ a) / (ValZ b) = case (mod a b) of
-                          0 -> ValZ $ a `div` b
-                          _ -> ValR $ fromInteger a / fromInteger b
-  recip (ValR a) = ValR (1 / a)
-  recip (ValZ 1) = ValZ 1
-  recip (ValZ a) = ValR (1 / fromInteger a)
 
 
 printVal :: Val -> String
