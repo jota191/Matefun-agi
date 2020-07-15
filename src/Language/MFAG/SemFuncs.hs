@@ -9,6 +9,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Language.MFAG.SemFuncs where
 
@@ -36,6 +37,17 @@ data AspAll set sig exp expg cond ecu fdef tuple =
            fdef  :: fdef,
            tuple :: tuple}
 
+(.:+:.)
+  (AspAll set  sig  exp  expg  cond  ecu  fdef  tuple)
+  (AspAll set' sig' exp' expg' cond' ecu' fdef' tuple')
+  = AspAll (set   .:+: set'  )
+           (sig   .:+: sig'  )
+           (exp   .:+: exp'  )
+           (expg  .:+: expg' )
+           (cond  .:+: cond' )
+           (ecu   .:+: ecu'  )
+           (fdef  .:+: fdef' )
+           (tuple .:+: tuple')
 
 sem_Set asp (Set sort xs refinement) =
   ((knitAspect p_Set) $ set asp)
@@ -44,6 +56,14 @@ sem_Set asp (Set sort xs refinement) =
           (((.*.) (((.=.) ch_refinement) ((sem_Cond asp) refinement)))
              emptyGenRec)))
 
+
+-- sem_Exp (asp :: AspAll (CAspect '[] set)
+--           (CAspect '[] sig) (CAspect '[] r1)
+--           (CAspect '[] expg) (CAspect '[] cond)
+--           (CAspect '[] ecu) (CAspect '[] fdef) (CAspect '[] r2))
+--   (Lit lit_t) =
+--   ((knitAspect p_Lit) $ exp asp)
+--     (((.*.) (((.=.) ch_lit_t) (sem_Lit lit_t))) emptyGenRec)
 sem_Exp asp (Lit lit_t) =
   ((knitAspect p_Lit) $ exp asp)
     (((.*.) (((.=.) ch_lit_t) (sem_Lit lit_t))) emptyGenRec)

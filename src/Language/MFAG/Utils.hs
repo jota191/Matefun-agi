@@ -12,3 +12,5 @@ append6 a x y z w t = a ++ x ++ y ++ z ++ w ++ t
 --   -> f a -> f b -> f c -> f d -> f e -> f g
 -- liftA5 f fa fb fc fr fg =
 --   f <$> 
+
+wrap x = [x]

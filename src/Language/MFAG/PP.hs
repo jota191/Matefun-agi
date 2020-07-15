@@ -11,7 +11,7 @@
 {-# LANGUAGE RankNTypes #-}
 
 
-module Language.MFAG.SId where
+module Language.MFAG.PP where
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
@@ -25,9 +25,6 @@ import Control.Applicative
 import Data.List (intercalate)
 import Prelude hiding (exp)
 
-
--- | PrettyPrint attribute
-$(attLabels [("spp" , ''String)])
 
 asp_spp = AspAll
   asp_spp_Set

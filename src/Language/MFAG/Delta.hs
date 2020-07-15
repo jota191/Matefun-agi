@@ -68,7 +68,8 @@ asp_idelta_Cond  =
   idelta `copyAtChi` ch_equa_l .+:
   idelta `copyAtChi` ch_equa_r .+:
   idelta `copyAtChi` ch_and_l  .+:
-  idelta `copyAtChi` ch_and_l  .+:
+  idelta `copyAtChi` ch_and_r  .+:
+  idelta `copyAtChi` ch_neg_e  .+:
   emptyAspect
 
 asp_idelta_Ecu   =
@@ -85,3 +86,10 @@ asp_idelta_Tuple =
   idelta `copyAtChi` ch_tuple_t .+:
   idelta `copyAtChi` ch_tuple_s .+:
   emptyAspect
+
+
+lookupFun :: NFun -> DeltaT -> FDef
+lookupFun f delta =
+  case M.lookup f delta of
+    Just fd -> fd
+    _ -> error "error: function not in scope"

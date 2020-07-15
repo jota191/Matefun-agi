@@ -11,7 +11,7 @@
 {-# LANGUAGE RankNTypes #-}
 
 
-module Language.MFAG.Sigma where
+module Language.MFAG.Gamma where
 
 import Language.Grammars.AspectAG
 import Language.Grammars.AspectAG.TH
@@ -30,10 +30,6 @@ import Language.MFAG.Attributes
 
 import Control.Monad
 
-type GammaT = M.Map NVar Val
-
--- Γ attribute, i.e. vatiable environment
-$(attLabels [("igamma" , ''GammaT)])
 
 asp_igamma = AspAll
   asp_igamma_Set
@@ -57,14 +53,15 @@ asp_igamma_Sig   =
 asp_igamma_Exp   =
   igamma `copyAtChi` ch_op_inf_l .+:
   igamma `copyAtChi` ch_op_inf_r .+:
-  asp_igamma_app                 .+:
+  igamma `copyAtChi` ch_app_e    .+:
+  -- asp_igamma_app                 .+:
   igamma `copyAtChi` ch_eprod_e  .+:
   igamma `copyAtChi` ch_index_e  .+:
   emptyAspect
 
 asp_igamma_app = inh igamma p_App ch_app_e $
   do f        <- ter ch_app_f
-     evArg    <- at ch_app_e eval
+     evArg    <- at ch_app_e seval
      oldGamma <- at lhs igamma
      delta    <- at lhs idelta
      let fun = M.lookup f delta
@@ -88,14 +85,15 @@ asp_igamma_Cond  =
   igamma `copyAtChi` ch_equa_l .+:
   igamma `copyAtChi` ch_equa_r .+:
   igamma `copyAtChi` ch_and_l  .+:
-  igamma `copyAtChi` ch_and_l  .+:
+  igamma `copyAtChi` ch_and_r  .+:
+  igamma `copyAtChi` ch_neg_e  .+:
   emptyAspect
 
-asp_igamma_Ecu   = undefined
+asp_igamma_Ecu   = emptyAspect
   -- igamma `copyAtChi` ch_ecu_r .+:
   -- emptyAspect
   
-asp_igamma_FDef  = undefined
+asp_igamma_FDef  = emptyAspect
 --   igamma `copyAtChi` ch_fun_sig .+:
 --   igamma `copyAtChi` ch_fun_body .+:
 --   emptyAspect
@@ -105,3 +103,5 @@ asp_igamma_Tuple =
   igamma `copyAtChi` ch_tuple_t .+:
   igamma `copyAtChi` ch_tuple_s .+:
   emptyAspect
+
+

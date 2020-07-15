@@ -28,6 +28,13 @@ import qualified Data.Map as M
 
 import Control.Monad
 
--- Γ attribute, i.e. vatiable environment
+type GammaT = M.Map NVar Val
 
-$(attLabels [("eval" , ''Val)])
+-- Γ attribute, i.e. vatiable environment
+$(attLabels [("igamma" , ''GammaT)])
+
+-- evaluation attribute
+$(attLabels [("seval" , ''Val)])
+
+-- PrettyPrint attribute
+$(attLabels [("spp" , ''String)])
