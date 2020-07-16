@@ -29,7 +29,7 @@ import qualified Data.Map as M
 import Language.MFAG.Attributes
 
 import Control.Monad
-
+import Data.Singletons
 
 asp_igamma = AspAll
   asp_igamma_Set
@@ -89,14 +89,14 @@ asp_igamma_Cond  =
   igamma `copyAtChi` ch_neg_e  .+:
   emptyAspect
 
-asp_igamma_Ecu   = emptyAspect
-  -- igamma `copyAtChi` ch_ecu_r .+:
-  -- emptyAspect
+asp_igamma_Ecu   = -- emptyAspect
+  igamma `copyAtChi` ch_ecu_r .+:
+  emptyAspect
   
-asp_igamma_FDef  = emptyAspect
---   igamma `copyAtChi` ch_fun_sig .+:
---   igamma `copyAtChi` ch_fun_body .+:
---   emptyAspect
+asp_igamma_FDef  = -- emptyAspect
+  igamma `copyAtChi` ch_fun_sig .+:
+  igamma `copyAtChi` ch_fun_body .+:
+  emptyAspect
 
 asp_igamma_Tuple =
   igamma `copyAtChi` ch_tuple_h .+:

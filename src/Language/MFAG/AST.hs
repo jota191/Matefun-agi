@@ -18,6 +18,8 @@ import Data.GenRec -- should be exported by AAG, perhaps?
 
 import Language.MFAG.Syntax.Terminals
 
+import Data.Singletons
+
 --import Data.Singletons
 -- cond
 

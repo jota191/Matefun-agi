@@ -45,62 +45,28 @@ asp_seval = AspAll
   asp_seval_FDef
   asp_seval_Tuple
 
-asp_seval_Set = emptyAspectForProds (p_Set .:. KNil)
-asp_seval_Sig = emptyAspectForProds (p_Sig .:. KNil)
+asp_seval_Set =
+  emptyRuleAtPrd p_Set .+: emptyAspect
+asp_seval_Sig =
+  emptyRuleAtPrd p_Sig .+: emptyAspect
+asp_seval_Cond =
+  emptyRuleAtPrd p_Top
+  .+: emptyRuleAtPrd p_Equa
+  .+: emptyRuleAtPrd p_And
+  .+: emptyRuleAtPrd p_Neg
+  .+: emptyAspect
+asp_seval_Ecu = emptyRuleAtPrd p_Ecu .+: emptyAspect
+asp_seval_FDef = emptyRuleAtPrd p_FDef .+: emptyAspect
 
-asp_seval_Cond = emptyAspectForProds
-  (p_Top .:. p_Equa .:. p_And .:. p_Neg .:. KNil)
-asp_seval_Ecu = emptyAspectForProds (p_Ecu .:. KNil)
-asp_seval_FDef = emptyAspectForProds (p_FDef .:. KNil)
-
--- asp_seval_Exp =
---   syn seval p_Var (
---   do x <- ter ch_var_t
---      gamma <- at lhs igamma
---      let mv = M.lookup x gamma
---      case mv of
---        Nothing -> error "variable not in scope"
---        Just v  -> return v
---   )
---   .+:
---   syn seval p_Lit (ter ch_lit_t)
---   .+:
---   syn seval p_OpInf (
---   do l  <- at ch_op_inf_l seval
---      r  <- at ch_op_inf_r seval
---      op <- ter ch_op_inf_op
---      return $ interpOpExpr op l r
---   )
---   .+:
---   syn seval p_EProd (
---   do res <- at ch_eprod_e seval
---      case res of
---        ValTupl _ -> return res
---        _ -> error "unhandled type error: tuple"
---   )
---   .+:
---   syn seval p_App (
---   do f <- ter ch_app_f
---      --t <- at ch_app_e sidExpC
---      delta <- at lhs idelta
---      gamma <- at lhs igamma
---      evArg <- at ch_app_e seval
---      let (FDef _ _ (Ecu vars expG)) = lookupFun f delta
---      when (length vars /= arity evArg)
---              (error "arg arity mismatch")
---      let newCtxElems = M.fromList (zip vars (untup evArg))
---      return $ evalExpG (newCtxElems `M.union` gamma) delta expG
---   )
---   .+:
---   syn seval p_Index (
---   do e <- at ch_index_e seval
---      i <- ter ch_index_i
---      return $ e `ith` i
---   )
---   .+:
---   emptyAspect
 asp_seval_Exp =
-  syn seval p_Var (return (ValZ 0)
+  syn seval p_Var (
+  do x <- ter ch_var_t
+     gamma <- at lhs igamma
+     let mv = M.lookup x gamma
+     case mv of
+       Nothing -> error ("variable not in scope\n"
+                         ++ show x ++ "\n" ++ show gamma) 
+       Just v  -> return v
   )
   .+:
   syn seval p_Lit (ter ch_lit_t)
@@ -120,13 +86,24 @@ asp_seval_Exp =
   )
   .+:
   syn seval p_App (
-  return (ValZ 0)
+  do f <- ter ch_app_f
+     delta <- at lhs idelta
+     gamma <- at lhs igamma
+     evArg <- at ch_app_e seval
+     let (FDef _ _ (Ecu vars expG)) = lookupFun f delta
+     let newCtxElems = M.fromList (zip vars (untup evArg))
+     if (length vars /= arity evArg)
+     then error "arg arity mismatch"
+     else return $ evalExpG (newCtxElems `M.union` gamma) delta expG
   )
   .+:
-  syn seval p_Index (return (ValZ 0))
+  syn seval p_Index (
+  do e <- at ch_index_e seval
+     i <- ter ch_index_i
+     return $ e `ith` i
+  )
   .+:
   emptyAspect
-
 
 asp_seval_Tuple =
   syn seval p_TSing (ValTupl . wrap <$> at ch_tuple_s seval)
@@ -150,19 +127,17 @@ asp_seval_ExpG =
 
 
 
-asp = asp_seval -- .:+:. asp_igamma .:+:. asp_idelta
+asp = asp_seval .:+:. asp_igamma .:+:. asp_idelta
 
 
 evalExp :: GammaT -> DeltaT -> Exp -> Val
--- evalExp = undefined
 evalExp gamma delta e =
- sem_Exp asp e (-- igamma =. gamma
-                -- *. idelta =. delta *. 
+ sem_Exp asp e (igamma =. gamma *.
+                idelta =. delta *. 
                 emptyAtt) #. seval
 
 evalExpG :: GammaT -> DeltaT -> ExpG -> Val
 evalExpG gamma delta e =
-  undefined
-  -- sem_ExpG asp e (igamma =. gamma
-  --                *. idelta =. delta *. emptyAtt) #. seval
+  sem_ExpG asp e (igamma =. gamma
+                 *. idelta =. delta *. emptyAtt) #. seval
 

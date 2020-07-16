@@ -21,7 +21,7 @@ import Language.MFAG.Syntax.Terminals
 import Language.MFAG.SemFuncs
 
 import Prelude hiding (exp)
---import Data.Singletons
+import Data.Singletons
 
 
 -- | Identity attribute
@@ -127,15 +127,15 @@ asp_sid_FDef = singAsp (syn sidFDef p_FDef
 
 --asp_sid_Core = asp_sid_Core' .:+: asp_sid_Core''
 
-asp_sid_Core' =
-       asp_sid_Ecu
-  .:+: asp_sid_Cond
-  .:+: asp_sid_Exp
+-- asp_sid_Core' =
+--        asp_sid_Ecu
+--   .:+: asp_sid_Cond
+--   .:+: asp_sid_Exp
 
-asp_sid_Core'' =
-       asp_sid_ExpG
-  .:+: asp_sid_Tuple
-  .:+: asp_sid_FDef
+-- asp_sid_Core'' =
+--        asp_sid_ExpG
+--   .:+: asp_sid_Tuple
+--   .:+: asp_sid_FDef
 
 
 asp_sid_Sig = singAsp
@@ -172,4 +172,6 @@ c 8 = EProd (TCons (c 4) (TSing (c 3)))
 
 -- test_id_Core
 --   = [c i == testIdC (c i) | i <- [1..8]]
-f = FDef "f" (Sig r r) (Ecu ["x"] $ ExpGOr $ c 8)
+d = FDef "double" (Sig r r) (Ecu ["x"] $ ExpGOr $ OpInf (Lit $ ValZ 2) Times (Var "x"))
+doublesum = FDef "doublesum" (Sig r r)
+  (Ecu ["x", "y"] $ ExpGOr $ OpInf (App "double" (Var "x")) Plus (App "double" (Var "y")))

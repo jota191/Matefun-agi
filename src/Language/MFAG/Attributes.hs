@@ -27,6 +27,7 @@ import Prelude hiding (exp)
 import qualified Data.Map as M
 
 import Control.Monad
+import Data.Singletons
 
 type GammaT = M.Map NVar Val
 

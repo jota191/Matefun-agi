@@ -25,7 +25,10 @@ import Control.Applicative
 import Prelude hiding (exp)
 import qualified Data.Map as M
 
+import Data.Singletons
+
 type DeltaT = M.Map NVar FDef
+
 
 -- Δ attribute, i.e. function environment
 $(attLabels [("idelta" , ''DeltaT)])

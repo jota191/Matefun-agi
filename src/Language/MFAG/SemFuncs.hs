@@ -20,8 +20,8 @@ import Language.MFAG.AST
 import Language.MFAG.Syntax.Terminals
 import Prelude hiding (exp)
 
---import Data.Singletons
-
+import Data.Singletons
+import Data.GenRec
 
 -- $(mkSemFuncs [''Nt_Set, ''Nt_Exp, ''Nt_Sig,
 --               ''Nt_ExpG, ''Nt_Cond,
