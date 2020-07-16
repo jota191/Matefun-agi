@@ -57,7 +57,7 @@ executable Matefun-agi
   other-extensions:    TemplateHaskell, FlexibleContexts, GADTs, TypeFamilies, AllowAmbiguousTypes, NoMonomorphismRestriction, DataKinds, FlexibleInstances, MultiParamTypeClasses, TypeApplications, RankNTypes
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.14 && <4.15, AspectAG >=0.6 && <0.7, poly-rec >=0.6 && <0.7, containers >=0.6 && <0.7, singletons >=2.7 && <2.8, requirements >=0.6 && <0.7, mtl >=2.2 && <2.3
+  build-depends:       base >=4.14 && <4.15, AspectAG >=0.7 && <0.8, poly-rec >=0.7 && <0.8, containers >=0.6 && <0.7, singletons >=2.7 && <2.8, requirements >=0.6 && <0.7, mtl >=2.2 && <2.3
 
   -- Directories containing source files.
   hs-source-dirs:      src
