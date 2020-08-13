@@ -1,0 +1,6 @@
+*.html
+*.tix
+*.dyn_hi
+*.dyn_o
+Tests
+

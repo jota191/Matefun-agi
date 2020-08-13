@@ -1,0 +1,20 @@
+#! /bin/sh
+
+[ -z $2 ] || ghc_ver=-$2
+
+
+case $1 in
+test)
+  ghc$ghc_ver --make -package singletons-2.7 -fhpc Tests.hs
+  rm Tests.tix
+  ./Tests
+  hpc$ghc_ver markup Tests.tix
+  ;;
+clean)
+  find . | while IFS= read -r dir; do
+    [ -d $dir ] || continue
+    rm $dir/{*.html,Tests,*.tix,*.o,*.hi,*.dyn_hi,*.dyn_o}
+  done
+  ;;
+esac
+

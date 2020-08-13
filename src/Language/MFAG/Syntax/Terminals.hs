@@ -44,7 +44,10 @@ instance Show BOp where
 
 -- | Equation operators
 data EOp   = GEq | Eq
-           deriving (Ord, Eq, Show, Read)
+           deriving (Ord, Eq, Read)
+instance Show EOp where
+  show GEq = ">="
+  show Eq  = "=="
 -- | values
 data Val
   = ValZ    Integer
@@ -71,5 +74,5 @@ printVal :: Val -> String
 printVal (ValZ i) = show i
 printVal (ValR d) = show d
 printVal (ValC (C name)) = name
-printVal (ValSec vs) = (L.intercalate ":" $ L.map printVal vs) ++ "[]"
+printVal (ValSec vs) = (L.intercalate ":" $ L.map printVal vs) ++ ":[]"
 printVal (ValTupl t) = '(':(L.intercalate "," $ L.map printVal t) ++ ")"
