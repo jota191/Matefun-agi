@@ -82,10 +82,10 @@ asp_spp_Exp =
 
 asp_spp_ExpG =
   syn spp p_ExpGIf (
-  append5 <$> (pure "\n\t " <$> at ch_expGIf_e spp)
+  append5 <$> at ch_expGIf_e spp
           <*> pure " if "
           <*> at ch_expGIf_cond spp
-          <*> pure " or"
+          <*> pure "\n\tor "
           <*> at ch_expGIf_tail spp
   )
   .+:
@@ -94,7 +94,7 @@ asp_spp_ExpG =
   emptyAspect
 
 asp_spp_Cond =
-  syn spp p_Top (return "T")
+  syn spp p_Top (return "True")
   .+:
   syn spp p_Equa (
    wrapParen <$> (append5
@@ -123,7 +123,7 @@ asp_spp_Ecu =
   singAsp $ syn spp p_Ecu $
   do vars <- ter ch_ecu_l
      body <- at ch_ecu_r spp
-     return $ wrapParen (intercalate ", "vars) ++ " =\n    " ++ body
+     return $ wrapParen (intercalate ", "vars) ++ " =\n\t" ++ body
 
 asp_spp_FDef =
   singAsp $ syn spp p_FDef $
@@ -146,7 +146,9 @@ asp_spp_Tuple =
 
 pp e = sem_FDef asp_spp e emptyAtt #. spp
 
-r = Set R [] Top
+-- Tests
+
+secuence s from to = (take to $ map s $ iterate (+1) from)
 
 c 1 = Var "x"
 c 2 = Lit (ValZ 23)
@@ -157,6 +159,56 @@ c 6 = App "nomF" (OpInf (c 4) Plus (c 2))
 --c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))  
 c 8 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
 
+cnd 1 = Top
+cnd 2 = Equa (Lit (ValZ 0)) GEq (Var "x") 
+cnd 3 = Equa (Lit (ValZ 0)) GEq (Var "y") 
+cnd 4 = And (cnd 2) (cnd 3)
+cnd 5 = Neg (cnd 2)
+cnd i = Equa (Var "x") Eq (Lit (ValZ i))
+
+e 1 = Var "x"
+e 2 = Lit (ValZ 23)
+e 3 = Lit (ValR 9.85)
+e 4 = Lit (ValC (C "C"))
+e 5 = Lit (ValSec  [ValZ 23, ValR 9.85])
+e 6 = Lit (ValTupl [ValZ 23, ValR 9.85])
+e 7 = Lit (ValTupl [ValZ 23, ValR 9.85])
+
+e 8  = OpInf (e 1) Plus  (e 2)
+e 9  = OpInf (e 1) Minus (e 2)
+e 10 = OpInf (e 1) Times (e 2)
+e 11 = OpInf (e 1) Exp   (e 2)
+e 12 = OpInf (e 1) Div   (e 2)
+e 13 = OpInf (e 1) Cons  (e 2)
+
+e 14 = EProd $ TSing (c 3)
+e 15 = EProd $ TCons (c 4) (TSing (c 3))
+e 16 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
+e 17 = App "nomF" (e 11)
+
+so 1 = Set Z                     [] Top
+so 2 = Set R                     [] Top
+so 3 = Set Enum                  [] Top
+so 4 = Set (Tuple [R, Z])        [] Top
+so 5 = Set (List (Tuple [R, Z])) [] Top
+so _ = Set R                     [] Top
+
+s i = Sig (so $ i*2) (so $ i*2+1)
+
 -- test_id_Core
 --   = [c i == testIdC (c i) | i <- [1..8]]
-f = FDef "f" (Sig r r) (Ecu ["x"] $ ExpGOr $ c 8)
+
+expG [] orE             = ExpGOr orE
+expG ((e, cond):ts) orE = ExpGIf e cond (expG ts orE)
+
+f s vs ls orE  = FDef "f" s (Ecu vs $ expG ls orE)
+
+test1 = putStrLn $ pp $ f (s 1) []         []                                        (c 8)
+
+test2 = putStrLn $ pp $ f (s 2) ["x"]      ((c 1, cnd 1):[])                         (c 2)
+
+test3 = putStrLn $ pp $ f (s 3) ["x","y"] (zip (secuence e 1 6) (secuence cnd 1 6))  (e 7)
+
+test4 = putStrLn $ pp $ f (s 4) ["z"]     (zip (secuence e 8 12) (secuence cnd 1 5)) (e 13)
+
+test5 = putStrLn $ pp $ f (s 5) ["w"]     (zip (secuence e 14 16) (secuence cnd 1 2)) (e 17)
