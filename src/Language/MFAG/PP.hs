@@ -20,6 +20,7 @@ import Language.MFAG.AST
 import Language.MFAG.Syntax.Terminals
 import Language.MFAG.SemFuncs
 import Language.MFAG.Utils
+import Language.MFAG.Utils.Attributes
 
 import Control.Applicative
 import Data.List (intercalate)
