@@ -26,6 +26,36 @@ import Control.Applicative
 import Data.List (intercalate)
 import Prelude hiding (exp)
 
+-- esto seria para usar despues
+{- bopPrecedence Exp = 4
+
+bopPrecedence Times = 3
+bopPrecedence Div   = bopPrecedence Times
+
+bopPrecedence Plus  = 2
+bopPrecedence Minus = bopPrecedence Plus
+
+bopPrecedence Cons  = 1
+-}
+
+asp_precedence_Exp
+   =  inh precedence p_OpInf ch_op_inf_l (return 1)
+  .+: inh precedence p_OpInf ch_op_inf_r (return 1)
+
+  .+: inh precedence p_Equa ch_equa_l (return 6)
+  .+: inh precedence p_Equa ch_equa_r (return 6)
+
+  .+: inh precedence p_App ch_app_e (return 0)
+
+  .+: inh precedence p_TCons ch_tuple_h (return 0)
+  .+: inh precedence p_TSing ch_tuple_s (return 0)
+
+  .+: inh precedence p_Index ch_index_e (return 5)
+
+  .+: inh precedence p_ExpGIf ch_expGIf_e (return 0)
+  .+: inh precedence p_ExpGOr ch_expGOr_e (return 0)
+
+  .+: emptyAspect
 
 asp_spp = AspAll
   asp_spp_Set
@@ -154,14 +184,14 @@ c 1 = Var "x"
 c 2 = Lit (ValZ 23)
 c 3 = OpInf (c 1) Plus (c 2)
 c 4 = OpInf (c 2) Plus (c 2)
---c 5 = OpPre "-" (OpInf (c 4) Plus (c 2)) 
+--c 5 = OpPre "-" (OpInf (c 4) Plus (c 2))
 c 6 = App "nomF" (OpInf (c 4) Plus (c 2))
---c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))  
+--c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))
 c 8 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
 
 cnd 1 = Top
-cnd 2 = Equa (Lit (ValZ 0)) GEq (Var "x") 
-cnd 3 = Equa (Lit (ValZ 0)) GEq (Var "y") 
+cnd 2 = Equa (Lit (ValZ 0)) GEq (Var "x")
+cnd 3 = Equa (Lit (ValZ 0)) GEq (Var "y")
 cnd 4 = And (cnd 2) (cnd 3)
 cnd 5 = Neg (cnd 2)
 cnd i = Equa (Var "x") Eq (Lit (ValZ i))
