@@ -36,7 +36,7 @@ bopPrecedence Plus  = 2
 bopPrecedence Minus = bopPrecedence Plus
 
 bopPrecedence Cons  = 1
--}
+
 
 asp_precedence_Exp
    =  inh precedence p_OpInf ch_op_inf_l (return 1)
@@ -45,18 +45,40 @@ asp_precedence_Exp
   .+: inh precedence p_Equa ch_equa_l (return 6)
   .+: inh precedence p_Equa ch_equa_r (return 6)
 
+  .+: inh precedence p_And ch_and_l (return 0)
+  .+: inh precedence p_And ch_and_r (return 0)
+
+  .+: inh precedence p_Neg ch_neg_e (return 0)
+
+  .+: inh precedence p_Set ch_refinement (return 0)
+
+  .+: inh precedence p_Sig ch_dom (return 0)
+  .+: inh precedence p_Sig ch_cod (return 0)
+
   .+: inh precedence p_App ch_app_e (return 0)
 
   .+: inh precedence p_TCons ch_tuple_h (return 0)
+  .+: inh precedence p_TCons ch_tuple_t (return 0)
+
   .+: inh precedence p_TSing ch_tuple_s (return 0)
+
+  .+: inh precedence p_EProd ch_eprod_e (return 0)
 
   .+: inh precedence p_Index ch_index_e (return 5)
 
   .+: inh precedence p_ExpGIf ch_expGIf_e (return 0)
+  .+: inh precedence p_ExpGIf ch_expGIf_cond (return 0)
+  .+: inh precedence p_ExpGIf ch_expGIf_tail (return 0)
+
   .+: inh precedence p_ExpGOr ch_expGOr_e (return 0)
 
-  .+: emptyAspect
+  .+: inh precedence p_Ecu ch_ecu_r (return 0)
 
+  .+: inh precedence p_FDef ch_fun_sig (return 0)
+  .+: inh precedence p_FDef ch_fun_body (return 0)
+
+  .+: emptyAspect
+-}
 asp_spp = AspAll
   asp_spp_Set
   asp_spp_Sig
@@ -68,15 +90,29 @@ asp_spp = AspAll
   asp_spp_Tuple
 
 
+
 asp_spp_Set = singAsp
   $ syn spp p_Set
   (
-    do ppsort <- show <$> ter ch_sort
-       ppvars <- show <$> ter ch_xs
-       ppcond <- at ch_refinement spp
-       return ("{" ++ ppvars ++ " in " ++ ppsort ++ " | "
-         ++ ppcond ++ "}")
+    do ppdsort <- show   <$> ter ch_sort
+       ppdvars <- ppvars <$> ter ch_xs
+       ppdcond <- ppcond <$> at ch_refinement spp
+       return $ pp ppdvars ppdsort ppdcond
   )
+  where 
+    ppvars []   = ""
+    ppvars (v:[]) = v ++ " in "
+    ppvars vs   = "(" ++ ppvars' vs ++ ")" ++ " in "
+
+    ppvars' (x:[]) = x
+    ppvars' (x:xs) = x ++ ", " ++ ppvars' xs
+
+    ppcond "True" = ""
+    ppcond ppcond = " | " ++ ppcond
+
+    pp "" ppsort _ = ppsort
+    pp ppvars ppsort ppcond = "{" ++ ppvars ++ ppsort ++ ppcond ++ "}"
+
 
 asp_spp_Sig = singAsp
   $ syn spp p_Sig $ liftA3 append3
@@ -153,7 +189,13 @@ asp_spp_Ecu =
   singAsp $ syn spp p_Ecu $
   do vars <- ter ch_ecu_l
      body <- at ch_ecu_r spp
-     return $ wrapParen (intercalate ", "vars) ++ " =\n\t" ++ body
+     return $ wrapParen (intercalate ", "vars) ++ " = " ++ pp body
+  where
+    pp body | elem '\n' body = "\n\t" ++ body
+            | otherwise      = body
+
+    
+      
 
 asp_spp_FDef =
   singAsp $ syn spp p_FDef $
@@ -216,11 +258,13 @@ e 15 = EProd $ TCons (c 4) (TSing (c 3))
 e 16 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
 e 17 = App "nomF" (e 11)
 
-so 1 = Set Z                     [] Top
-so 2 = Set R                     [] Top
-so 3 = Set Enum                  [] Top
-so 4 = Set (Tuple [R, Z])        [] Top
-so 5 = Set (List (Tuple [R, Z])) [] Top
+so 1 = Set Z                     []        $ Top
+so 2 = Set R                     ["x"]     $ Top
+so 3 = Set (List Z)              []        $ Top
+so 4 = Set (Tuple [R, Z])        ["x","y"] $ cnd 4
+so 5 = Set (Tuple [R, Z])        ["x","y"] $ Top
+so 6 = Set (List (Tuple [R, Z])) [] Top
+-- so 7 = Set Enum                  ["x","y"] $ cnd 5
 so _ = Set R                     [] Top
 
 s i = Sig (so $ i*2) (so $ i*2+1)
