@@ -1,4 +1,4 @@
-module Language.MFAG.Utils where
+module Utils where
 
 wrapParen s = "(" ++ s ++ ")"
 wrapSpace s = " " ++ s ++ " "

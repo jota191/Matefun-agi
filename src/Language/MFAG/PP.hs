@@ -79,6 +79,135 @@ asp_precedence_Exp
 
   .+: emptyAspect
 -}
+
+tabsize = 2
+
+inewline i nxtLine = '\n' : iterate (' ':) nxtLine !! i
+
+asp_indent = AspAll
+  asp_indent_Set
+  asp_indent_Sig
+  asp_indent_Exp
+  asp_indent_ExpG
+  asp_indent_Cond
+  asp_indent_Ecu
+  asp_indent_FDef
+  asp_indent_Tuple
+
+asp_indent_Set =
+  emptyRuleAtPrd p_Set .+: emptyAspect
+
+asp_indent_Sig =
+  emptyRuleAtPrd p_Sig .+: emptyAspect
+
+  {--}
+asp_indent_Ecu 
+  -- = emptyRuleAtPrd p_Ecu
+  = inh indent p_Ecu ch_ecu_r (at lhs indent) --(return (0:: Int))
+ .+: (syn indent p_Ecu $
+     do vars <- ter ch_ecu_l
+        return $ length $ intercalate ", " vars)
+ .+: emptyAspect
+
+asp_indent_FDef 
+  =  (inh indent p_FDef ch_fun_body $
+     do namel <- liftA length $ ter ch_nfun
+        varl  <- at ch_fun_body indent
+        return $ namel + 1 + varl + 5  )
+        --       namel + " ("  + varl + ") = "
+ .+: emptyAspect
+
+asp_indent_Exp
+   =  emptyRuleAtPrd p_OpInf
+  .+: emptyRuleAtPrd p_App 
+  .+: emptyRuleAtPrd p_Index
+  .+: emptyAspect
+
+asp_indent_Cond
+   =  emptyRuleAtPrd p_Top
+  .+: emptyRuleAtPrd p_Equa 
+  .+: emptyRuleAtPrd p_And
+  .+: emptyRuleAtPrd p_Neg
+  .+: emptyAspect
+
+asp_indent_Tuple 
+   =  emptyRuleAtPrd p_TCons
+  .+: emptyRuleAtPrd p_TSing
+  .+: emptyAspect
+
+asp_indent_ExpG
+   = inh indent p_ExpGIf ch_expGIf_tail (at lhs indent) 
+  .+: emptyRuleAtPrd p_ExpGOr
+  .+: emptyAspect
+
+
+----------------
+-- precedence --
+----------------
+asp_precedence = AspAll
+  asp_precedence_Set
+  asp_precedence_Sig
+  asp_precedence_Exp
+  asp_precedence_ExpG
+  asp_precedence_Cond
+  asp_precedence_Ecu
+  asp_precedence_FDef
+  asp_precedence_Tuple
+
+asp_precedence_Set =
+  emptyRuleAtPrd p_Set .+: emptyAspect
+
+asp_precedence_Sig =
+  emptyRuleAtPrd p_Sig .+: emptyAspect
+
+asp_precedence_Ecu = emptyRuleAtPrd p_Ecu .+: emptyAspect
+
+asp_precedence_FDef = emptyRuleAtPrd p_FDef .+: emptyAspect
+
+
+bopPrecedence :: BOp -> Int
+bopPrecedence Exp = 4
+
+bopPrecedence Times = 3
+bopPrecedence Div   = bopPrecedence Times
+
+bopPrecedence Plus  = 2
+bopPrecedence Minus = bopPrecedence Plus
+
+bopPrecedence Cons  = 1
+
+asp_precedence_Exp
+   =  inh precedence p_OpInf ch_op_inf_l (bopPrecedence <$> ter ch_op_inf_op)
+  .+: inh precedence p_OpInf ch_op_inf_r (bopPrecedence <$> ter ch_op_inf_op)
+
+  .+: inh precedence p_App ch_app_e (return (0:: Int))
+
+  .+: inh precedence p_Index ch_index_e (return (5:: Int))
+
+  .+: emptyAspect
+
+asp_precedence_Cond
+   =  emptyRuleAtPrd p_Top
+  .+: inh precedence p_Equa ch_equa_l (return (0:: Int))
+  .+: inh precedence p_Equa ch_equa_r (return (0:: Int))
+  .+: emptyRuleAtPrd p_And
+  .+: emptyRuleAtPrd p_Neg
+  .+: emptyAspect
+
+asp_precedence_Tuple 
+   =  inh precedence p_TCons ch_tuple_h (return (0:: Int))
+  .+: inh precedence p_TSing ch_tuple_s (return (0:: Int))
+  .+: emptyAspect
+
+asp_precedence_ExpG
+   =  inh precedence p_ExpGIf ch_expGIf_e (return (0:: Int))
+  .+: inh precedence p_ExpGOr ch_expGOr_e (return (0:: Int))
+  .+: emptyAspect
+
+----------
+-- spp  --
+----------
+>>>>>>> 551c661cd34e0d639745b4792237ecb5175205d9
 asp_spp = AspAll
   asp_spp_Set
   asp_spp_Sig
@@ -89,14 +218,13 @@ asp_spp = AspAll
   asp_spp_FDef
   asp_spp_Tuple
 
-
-
 asp_spp_Set = singAsp
   $ syn spp p_Set
   (
     do ppdsort <- show   <$> ter ch_sort
        ppdvars <- ppvars <$> ter ch_xs
        ppdcond <- ppcond <$> at ch_refinement spp
+       ppdcond <- at ch_refinement spp
        return $ pp ppdvars ppdsort ppdcond
   )
   where 
@@ -126,11 +254,15 @@ asp_spp_Exp =
   syn spp p_Lit (printVal <$> ter ch_lit_t)
   .+:
   syn spp p_OpInf (
-    wrapParen <$> liftA3 append3
-                  (at ch_op_inf_l spp)
-                  (wrapSpace . show <$> ter ch_op_inf_op)
-                  (at ch_op_inf_r spp)
-    )
+    liftA2 wrapParenIf
+      ( liftA2 (>) (at lhs precedence) (bopPrecedence <$> ter ch_op_inf_op))
+      -- (return True)
+      (liftA3 append3
+        (at ch_op_inf_l spp)
+        (wrapSpace . show <$> ter ch_op_inf_op)
+        (at ch_op_inf_r spp)
+      )
+  )
   .+:
   syn spp p_App (
     (++) <$> ter ch_app_f <*> (wrapParen <$> at ch_app_e spp)
@@ -153,6 +285,14 @@ asp_spp_ExpG =
           <*> at ch_expGIf_cond spp
           <*> pure "\n\tor "
           <*> at ch_expGIf_tail spp
+  (syn spp p_ExpGIf $
+  do 
+     ind <- at lhs indent
+     append5 <$> at ch_expGIf_e spp
+             <*> pure " if "
+             <*> at ch_expGIf_cond spp
+             <*> pure (inewline (ind-3) " or ")
+             <*> at ch_expGIf_tail spp
   )
   .+:
   syn spp p_ExpGOr (at ch_expGOr_e spp)
@@ -194,9 +334,6 @@ asp_spp_Ecu =
     pp body | elem '\n' body = "\n\t" ++ body
             | otherwise      = body
 
-    
-      
-
 asp_spp_FDef =
   singAsp $ syn spp p_FDef $
   do name <- ter ch_nfun
@@ -216,7 +353,7 @@ asp_spp_Tuple =
   emptyAspect
 
 
-pp e = sem_FDef asp_spp e emptyAtt #. spp
+pp e = sem_FDef (asp_spp .:+:. asp_precedence .:+:. asp_indent) e emptyAtt #. spp
 
 -- Tests
 
@@ -229,6 +366,9 @@ c 4 = OpInf (c 2) Plus (c 2)
 --c 5 = OpPre "-" (OpInf (c 4) Plus (c 2))
 c 6 = App "nomF" (OpInf (c 4) Plus (c 2))
 --c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))
+c 5 = OpPre "-" (OpInf (c 4) Plus (c 2))
+-- c 6 = App "nomF" (OpInf (c 4) Plus (c 2))
+-- c 7 = AppU (Ecu ["x"] (ExpGOr (c 6))) (OpInf (c 4) "+" (c 2))
 c 8 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
 
 cnd 1 = Top
@@ -236,6 +376,7 @@ cnd 2 = Equa (Lit (ValZ 0)) GEq (Var "x")
 cnd 3 = Equa (Lit (ValZ 0)) GEq (Var "y")
 cnd 4 = And (cnd 2) (cnd 3)
 cnd 5 = Neg (cnd 2)
+cnd 6 = Equa (e 18) GEq (e 24)
 cnd i = Equa (Var "x") Eq (Lit (ValZ i))
 
 e 1 = Var "x"
@@ -258,6 +399,30 @@ e 15 = EProd $ TCons (c 4) (TSing (c 3))
 e 16 = Index (EProd (TCons (c 4) (TSing (c 3)))) 1
 e 17 = App "nomF" (e 11)
 
+e 18 = OpInf (e 8)  Plus   (e 8)
+e 19 = OpInf (e 8)  Minus  (e 8)
+e 20 = OpInf (e 8)  Times  (e 8)
+e 21 = OpInf (e 8)  Exp    (e 8) 
+e 22 = OpInf (e 8)  Div    (e 8)
+e 23 = OpInf (e 8)  Cons   (e 8)
+e 24 = OpInf (e 10) Plus   (e 8)
+e 25 = OpInf (e 10) Minus  (e 8)
+e 26 = OpInf (e 10) Times  (e 8)
+e 27 = OpInf (e 10) Exp    (e 8) 
+e 28 = OpInf (e 10) Div    (e 8)
+e 29 = OpInf (e 10) Cons   (e 8)
+e 30 = OpInf (e 10) Plus   (e 11)
+e 31 = OpInf (e 10) Minus  (e 11)
+e 32 = OpInf (e 10) Times  (e 11)
+e 33 = OpInf (e 10) Exp    (e 11) 
+e 34 = OpInf (e 10) Div    (e 11)
+e 35 = OpInf (e 10) Cons   (e 11)
+e 36 = Index (e 34) 1
+e 37 =  App "nomF" (OpInf (e 23) Cons (e 9))
+
+e _ = OpInf (e 10) Cons   (e 11)
+
+
 so 1 = Set Z                     []        $ Top
 so 2 = Set R                     ["x"]     $ Top
 so 3 = Set (List Z)              []        $ Top
@@ -277,6 +442,10 @@ expG ((e, cond):ts) orE = ExpGIf e cond (expG ts orE)
 
 f s vs ls orE  = FDef "f" s (Ecu vs $ expG ls orE)
 
+fn n s vs ls orE  = FDef n s (Ecu vs $ expG ls orE)
+
+
+
 test1 = putStrLn $ pp $ f (s 1) []         []                                        (c 8)
 
 test2 = putStrLn $ pp $ f (s 2) ["x"]      ((c 1, cnd 1):[])                         (c 2)
@@ -286,3 +455,6 @@ test3 = putStrLn $ pp $ f (s 3) ["x","y"] (zip (secuence e 1 6) (secuence cnd 1 
 test4 = putStrLn $ pp $ f (s 4) ["z"]     (zip (secuence e 8 12) (secuence cnd 1 5)) (e 13)
 
 test5 = putStrLn $ pp $ f (s 5) ["w"]     (zip (secuence e 14 16) (secuence cnd 1 2)) (e 17)
+test6 = putStrLn $ pp $ fn "funcion" (s 5) ["w"](zip (secuence e 18 36) (secuence cnd 1 18)) (e 37)
+
+test7 = putStrLn $ pp $ fn "func" (s 5) ["w"] (zip (secuence e 18 36) (secuence cnd 1 18)) (e 37)

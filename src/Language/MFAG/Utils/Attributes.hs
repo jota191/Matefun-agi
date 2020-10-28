@@ -18,3 +18,4 @@ import Data.Singletons
 -- | pretty print
 $(attLabels [("spp", ''String)])
 $(attLabels [("precedence", ''Int)])
+$(attLabels [("indent", ''Int)])
